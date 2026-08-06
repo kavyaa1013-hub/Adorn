@@ -44,13 +44,20 @@
       <a href="#collections">Collections</a>
       <a href="#bedsheets">Bed Sheets</a>
       <a href="#carpets">Carpets</a>
+      <a href="#shop" data-shop-open>Shop</a>
       <a href="#story">Our Craft</a>
-      <a href="#testimonials">Reviews</a>
       <a href="#contact">Contact</a>
     </nav>
 
     <div class="header-actions">
-      <a href="#contact" class="btn btn-outline">Get in Touch</a>
+      <button class="btn btn-primary btn-shop" data-shop-open>Shop Now</button>
+      <button id="cartBtn" class="cart-btn" aria-label="Open shopping bag">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 8h12l-1.1 11.2a2 2 0 0 1-2 1.8H9.1a2 2 0 0 1-2-1.8L6 8Z"/>
+          <path d="M9.2 8V6.2a2.8 2.8 0 0 1 5.6 0V8"/>
+        </svg>
+        <span class="cart-count" id="cartCount">0</span>
+      </button>
       <button id="navToggle" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
@@ -71,8 +78,8 @@
         cotton and dyed by hand, carrying forward generations of weaving artistry.
       </p>
       <div class="hero-cta reveal">
-        <a href="#collections" class="btn btn-primary">Explore Collections</a>
-        <a href="#story" class="btn btn-ghost">Our Story</a>
+        <button class="btn btn-primary" data-shop-open>Shop the Collection</button>
+        <a href="#collections" class="btn btn-ghost">Browse Collections</a>
       </div>
 
       <div class="hero-stats reveal">
@@ -135,7 +142,7 @@
             <span class="link-arrow">Discover &rarr;</span>
           </div>
         </a>
-        <a href="#" class="collection-card reveal">
+        <a href="#shop" data-shop-open class="collection-card reveal">
           <div class="collection-visual pattern-cushion"></div>
           <div class="collection-body">
             <h3>Cushions &amp; Throws</h3>
@@ -206,6 +213,134 @@
         </div>
         <a href="#contact" class="btn btn-primary reveal">Enquire About Carpets</a>
       </div>
+    </div>
+  </section>
+
+  <!-- ===== SHOP ===== -->
+  <section id="shop" class="shop" hidden>
+    <div class="container">
+      <p class="eyebrow center">The Adorn Store</p>
+      <h2 class="section-title center">Shop Our Handloom Pieces</h2>
+      <p class="section-sub center">Eight signature weaves, ready to ship from the loom. Every piece is
+        made to order in small batches, so no two are ever identical.</p>
+
+      <div class="shop-filters" id="shopFilters" role="group" aria-label="Filter products">
+        <button class="filter-chip is-active" data-filter="all">All Pieces</button>
+        <button class="filter-chip" data-filter="bedsheets">Bed Sheets</button>
+        <button class="filter-chip" data-filter="carpets">Carpets &amp; Rugs</button>
+        <button class="filter-chip" data-filter="cushions">Cushions &amp; Throws</button>
+      </div>
+
+      <div class="shop-grid" id="shopGrid">
+
+        <article class="shop-card" data-category="bedsheets" data-id="indigo-jaal"
+                 data-name="Indigo Jaal Bed Sheet" data-price="4200" style="--i:0">
+          <div class="shop-thumb weave-1"><span class="tag">Bed Sheets</span></div>
+          <div class="shop-info">
+            <h3>Indigo Jaal Bed Sheet</h3>
+            <p>Double &middot; handspun cotton &middot; 2 pillow covers</p>
+            <div class="shop-foot">
+              <span class="price">&#8377;4,200</span>
+              <button class="btn-cart" data-add>Add to Bag</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="shop-card" data-category="bedsheets" data-id="saffron-stripe"
+                 data-name="Saffron Stripe Sheet Set" data-price="3850" style="--i:1">
+          <div class="shop-thumb weave-2"><span class="tag">Bed Sheets</span></div>
+          <div class="shop-info">
+            <h3>Saffron Stripe Sheet Set</h3>
+            <p>Queen &middot; vegetable-dyed &middot; pre-shrunk</p>
+            <div class="shop-foot">
+              <span class="price">&#8377;3,850</span>
+              <button class="btn-cart" data-add>Add to Bag</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="shop-card" data-category="bedsheets" data-id="ivory-chanderi"
+                 data-name="Ivory Chanderi Duvet Cover" data-price="5600" style="--i:2">
+          <div class="shop-thumb weave-3"><span class="tag">Bed Sheets</span></div>
+          <div class="shop-info">
+            <h3>Ivory Chanderi Duvet Cover</h3>
+            <p>King &middot; cotton-silk blend &middot; hand-finished</p>
+            <div class="shop-foot">
+              <span class="price">&#8377;5,600</span>
+              <button class="btn-cart" data-add>Add to Bag</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="shop-card" data-category="carpets" data-id="mughal-trellis"
+                 data-name="Mughal Trellis Carpet" data-price="18500" style="--i:3">
+          <div class="shop-thumb weave-4"><span class="tag">Carpets</span></div>
+          <div class="shop-info">
+            <h3>Mughal Trellis Carpet</h3>
+            <p>6&times;9 ft &middot; hand-knotted wool &middot; 14 weeks on the loom</p>
+            <div class="shop-foot">
+              <span class="price">&#8377;18,500</span>
+              <button class="btn-cart" data-add>Add to Bag</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="shop-card" data-category="carpets" data-id="sundown-kilim"
+                 data-name="Sundown Kilim Durrie" data-price="9750" style="--i:4">
+          <div class="shop-thumb weave-5"><span class="tag">Carpets</span></div>
+          <div class="shop-info">
+            <h3>Sundown Kilim Durrie</h3>
+            <p>5&times;7 ft &middot; flat-woven cotton &middot; reversible</p>
+            <div class="shop-foot">
+              <span class="price">&#8377;9,750</span>
+              <button class="btn-cart" data-add>Add to Bag</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="shop-card" data-category="carpets" data-id="pearl-durrie"
+                 data-name="Pearl Durrie Runner" data-price="6400" style="--i:5">
+          <div class="shop-thumb weave-6"><span class="tag">Carpets</span></div>
+          <div class="shop-info">
+            <h3>Pearl Durrie Runner</h3>
+            <p>2.5&times;8 ft &middot; jute &amp; cotton &middot; undyed</p>
+            <div class="shop-foot">
+              <span class="price">&#8377;6,400</span>
+              <button class="btn-cart" data-add>Add to Bag</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="shop-card" data-category="cushions" data-id="terracotta-bloom"
+                 data-name="Terracotta Bloom Cushions" data-price="1900" style="--i:6">
+          <div class="shop-thumb weave-7"><span class="tag">Cushions</span></div>
+          <div class="shop-info">
+            <h3>Terracotta Bloom Cushions</h3>
+            <p>Set of 2 &middot; 16&times;16 in &middot; covers only</p>
+            <div class="shop-foot">
+              <span class="price">&#8377;1,900</span>
+              <button class="btn-cart" data-add>Add to Bag</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="shop-card" data-category="cushions" data-id="wool-throw"
+                 data-name="Handloom Wool Throw" data-price="3200" style="--i:7">
+          <div class="shop-thumb weave-8"><span class="tag">Throws</span></div>
+          <div class="shop-info">
+            <h3>Handloom Wool Throw</h3>
+            <p>50&times;70 in &middot; merino blend &middot; fringed edge</p>
+            <div class="shop-foot">
+              <span class="price">&#8377;3,200</span>
+              <button class="btn-cart" data-add>Add to Bag</button>
+            </div>
+          </div>
+        </article>
+
+      </div>
+
+      <p class="shop-note">Prices are inclusive of taxes. Free shipping across India on orders above
+        &#8377;5,000 &middot; Custom sizes available on request.</p>
     </div>
   </section>
 
@@ -354,6 +489,24 @@
     <p>&copy; <span id="year"></span> Adorn Handloom. All rights reserved.</p>
   </div>
 </footer>
+
+<!-- ===== CART DRAWER ===== -->
+<div class="drawer-overlay" id="drawerOverlay" hidden></div>
+
+<aside class="cart-drawer" id="cartDrawer" aria-label="Shopping bag" aria-hidden="true">
+  <header class="cart-head">
+    <h3>Your Bag</h3>
+    <button id="cartClose" class="cart-close" aria-label="Close bag">&times;</button>
+  </header>
+  <div class="cart-body" id="cartBody"></div>
+  <footer class="cart-foot">
+    <div class="cart-total"><span>Total</span><strong id="cartTotal">&#8377;0</strong></div>
+    <button class="btn btn-primary cart-checkout" id="cartCheckout">Request This Order</button>
+    <p class="cart-note">We confirm every order by email &mdash; our team replies within one business day.</p>
+  </footer>
+</aside>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="js/main.js"></script>
 </body>

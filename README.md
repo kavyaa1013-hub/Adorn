@@ -10,10 +10,27 @@ textiles.
 - **Palette** — white / pastel ivory &amp; blue backgrounds with dark navy blue and gold accents,
   matched to the brand logo's color scheme.
 - **Sections** — hero, feature strip, collections (Bed Sheets, Carpets, Cushions &amp; Throws),
-  dedicated Bed Sheets &amp; Carpets product sections, brand story/craftsmanship, testimonials
-  slider, newsletter signup, and a contact form.
+  dedicated Bed Sheets &amp; Carpets product sections, the shop, brand story/craftsmanship,
+  testimonials slider, newsletter signup, and a contact form.
 - **No build step** — plain HTML/CSS/JS, all visuals (weave/loom patterns) drawn with CSS/SVG so
   there are no external image dependencies.
+
+## The shop
+
+The **Shop Now** button (header, hero, and the Cushions collection card) reveals a store section
+holding 8 products across the three categories, with:
+
+- category filter chips (All / Bed Sheets / Carpets / Cushions &amp; Throws)
+- add-to-bag on every card, a live count badge on the header cart icon, and a toast confirmation
+- a slide-in cart drawer with per-item quantity steppers and a running total
+
+There is no payment backend. **Request This Order** closes the drawer, writes the bag contents into
+the contact form's message field, and scrolls the visitor there — so enquiries arrive by email.
+To wire up real checkout later, replace that handler in `js/main.js` (search for `cartCheckout`).
+
+Products live directly in `index.html` as `.shop-card` articles. Each one carries `data-id`,
+`data-name`, `data-price` (integer rupees) and `data-category`, which is all the cart and filters
+read — so adding a product is just copying a card and editing those attributes.
 
 ## Structure
 
