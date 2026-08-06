@@ -10,14 +10,6 @@ The filename must match the product's `data-id` in `index.html`, with a `.jpg` e
 | Product                     | Filename                  |
 | --------------------------- | ------------------------- |
 | Onyx Black Bedsheet Set     | `onyx-bedsheet.jpg` ✅     |
-| Indigo Jaal Bed Sheet       | `indigo-jaal.jpg`         |
-| Saffron Stripe Sheet Set    | `saffron-stripe.jpg`      |
-| Ivory Chanderi Duvet Cover  | `ivory-chanderi.jpg`      |
-| Mughal Trellis Carpet       | `mughal-trellis.jpg`      |
-| Sundown Kilim Durrie        | `sundown-kilim.jpg`       |
-| Pearl Durrie Runner         | `pearl-durrie.jpg`        |
-| Terracotta Bloom Cushions   | `terracotta-bloom.jpg`    |
-| Handloom Wool Throw         | `wool-throw.jpg`          |
 
 ## Sizing
 
@@ -28,7 +20,7 @@ The filename must match the product's `data-id` in `index.html`, with a `.jpg` e
   that product's `<img>` in `index.html` to match.
 - **Weight:** aim for under 300 KB each.
 
-✅ = photo supplied. Everything else still falls back to a woven pattern.
+✅ = photo supplied. Any product without one falls back to a woven pattern.
 
 ## Extra angles
 

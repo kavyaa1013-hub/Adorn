@@ -157,7 +157,10 @@
 
     if (wasHidden) {
       var count = shopGrid ? shopGrid.querySelectorAll(".shop-card").length : 0;
-      showToast("Welcome to the Adorn store — " + count + " pieces ready to ship.");
+      showToast(
+        "Welcome to the Adorn store — " + count + " piece" +
+        (count === 1 ? "" : "s") + " ready to ship."
+      );
     }
   }
 
@@ -207,24 +210,49 @@
 
   /* ---------- Category filters ---------- */
   var shopFilters = document.getElementById("shopFilters");
-  if (shopFilters && shopGrid) {
+  if (shopGrid) {
     var cards = Array.prototype.slice.call(shopGrid.querySelectorAll(".shop-card"));
-    shopFilters.addEventListener("click", function (e) {
-      var chip = e.target.closest(".filter-chip");
-      if (!chip) return;
-      var filter = chip.dataset.filter;
 
-      shopFilters.querySelectorAll(".filter-chip").forEach(function (c) {
-        c.classList.toggle("is-active", c === chip);
-      });
+    // One or two pieces look stranded across a four-column grid, so narrow and centre it.
+    function reflow(visible) {
+      shopGrid.classList.toggle("is-sparse", visible > 0 && visible < 3);
+    }
+    reflow(cards.length);
 
-      var shown = 0;
-      cards.forEach(function (card) {
-        var match = filter === "all" || card.dataset.category === filter;
-        card.classList.toggle("is-filtered", !match);
-        if (match) card.style.setProperty("--i", shown++);
+    if (shopFilters) {
+      // Only offer a category that has something in it — a filter leading to an
+      // empty grid is worse than no filter at all. Chips come back on their own
+      // as products in that category are added.
+      var represented = 0;
+      shopFilters.querySelectorAll(".filter-chip").forEach(function (chip) {
+        if (chip.dataset.filter === "all") return;
+        var inCategory = cards.filter(function (card) {
+          return card.dataset.category === chip.dataset.filter;
+        }).length;
+        chip.hidden = inCategory === 0;
+        if (inCategory) represented++;
       });
-    });
+      // With everything sitting in one category there is nothing to filter between.
+      shopFilters.hidden = represented < 2;
+
+      shopFilters.addEventListener("click", function (e) {
+        var chip = e.target.closest(".filter-chip");
+        if (!chip) return;
+        var filter = chip.dataset.filter;
+
+        shopFilters.querySelectorAll(".filter-chip").forEach(function (c) {
+          c.classList.toggle("is-active", c === chip);
+        });
+
+        var shown = 0;
+        cards.forEach(function (card) {
+          var match = filter === "all" || card.dataset.category === filter;
+          card.classList.toggle("is-filtered", !match);
+          if (match) card.style.setProperty("--i", shown++);
+        });
+        reflow(shown);
+      });
+    }
   }
 
   /* ---------- Cart ---------- */

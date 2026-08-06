@@ -712,6 +712,12 @@ section{ padding: 110px 0; }
   grid-template-columns: repeat(4, 1fr);
   gap: 26px;
 }
+/* Applied by main.js while the range is small, so a lone piece sits centred at a
+   sensible width instead of stretched or stranded in the first of four columns. */
+.shop-grid.is-sparse{
+  grid-template-columns: repeat(auto-fit, minmax(260px, 300px));
+  justify-content: center;
+}
 .shop-card{
   background: var(--white);
   border-radius: var(--radius);

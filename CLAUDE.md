@@ -44,11 +44,19 @@ data attributes: `data-id`, `data-name`, `data-price` (integer rupees), `data-ca
 `assets/products/<data-id>.jpg`. A missing photo is removed by `main.js` and the CSS weave
 pattern underneath shows instead — never a broken image.
 
-**Only the Onyx Black Bedsheet Set is a real product.** The other eight are placeholders with
-invented names and prices, kept as visual filler while the owner supplies real ones. Do not
-present them as genuine, and remove them when asked.
+**Every product in the shop is real.** The eight invented placeholders were removed once the
+owner supplied a genuine product — do not reintroduce filler products with invented prices.
 
-Never invent a price for a real product. Ask.
+Never invent a price. Ask the owner.
+
+`main.js` adapts the shop to however many products exist: category chips hide when that category
+is empty, the whole filter bar hides when only one category is represented, and a range of one or
+two pieces is centred rather than stranded across four columns. So adding or removing a product
+is a matter of editing `index.html` alone.
+
+Copy elsewhere on the page is still placeholder marketing text the owner has not confirmed —
+the hero and story statistics, the testimonials, and the colour-swatch names in the Bed Sheets
+and Carpets sections.
 
 ## Visual work
 
