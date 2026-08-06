@@ -421,6 +421,15 @@ section{ padding: 110px 0; }
   position:relative;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.product-frame img{
+  position:absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 .badge{
   position:absolute; top: 20px; left: 20px;
@@ -728,16 +737,44 @@ section{ padding: 110px 0; }
 }
 /* A real photo covers the woven placeholder pattern beneath it.
    main.js drops the <img> if the file is missing, revealing the weave again. */
-.shop-thumb img{
+.shop-photo{
   position:absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform .6s var(--ease);
+  transition: transform .6s var(--ease), opacity .3s var(--ease);
 }
-.shop-card:hover .shop-thumb img{ transform: scale(1.05); }
+.shop-card:hover .shop-photo{ transform: scale(1.05); }
+.shop-photo.is-swapping{ opacity: 0; }
+
+/* Thumbnail strip for products photographed from more than one angle */
+.shop-gallery{
+  position: absolute;
+  left: 12px; bottom: 12px;
+  display: flex;
+  gap: 6px;
+  padding: 5px;
+  border-radius: 8px;
+  background: rgba(255,255,255,.82);
+  backdrop-filter: blur(4px);
+}
+.shop-gallery button{
+  width: 34px; height: 26px;
+  padding: 0;
+  border: 1.5px solid transparent;
+  border-radius: 5px;
+  overflow: hidden;
+  cursor: pointer;
+  background: none;
+  line-height: 0;
+  transition: border-color .25s var(--ease), transform .25s var(--ease);
+}
+.shop-gallery button img{ width: 100%; height: 100%; object-fit: cover; display: block; }
+.shop-gallery button:hover{ transform: translateY(-2px); }
+.shop-gallery button.is-active{ border-color: var(--gold); }
+.shop-gallery button:focus-visible{ outline: 2px solid var(--navy); outline-offset: 2px; }
 .shop-thumb .tag{
   position:absolute; top: 14px; left: 14px;
   background: rgba(255,255,255,.9);

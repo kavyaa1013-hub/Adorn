@@ -148,7 +148,10 @@
       window.scrollTo({ top: top, behavior: "smooth" });
     });
 
-    if (wasHidden) showToast("Welcome to the Adorn store — 8 pieces ready to ship.");
+    if (wasHidden) {
+      var count = shopGrid ? shopGrid.querySelectorAll(".shop-card").length : 0;
+      showToast("Welcome to the Adorn store — " + count + " pieces ready to ship.");
+    }
   }
 
   document.querySelectorAll("[data-shop-open]").forEach(function (trigger) {
@@ -162,9 +165,36 @@
      Each card ships with an <img> pointing at assets/products/<id>.jpg. Until that
      file exists the image fails to load, so we remove it and the woven CSS pattern
      underneath stays on show. Drop a photo in with the matching name and it appears. */
-  document.querySelectorAll(".shop-thumb img").forEach(function (img) {
+  document.querySelectorAll(".shop-photo").forEach(function (img) {
     img.addEventListener("error", function () {
       img.remove();
+    });
+  });
+
+  /* ---------- Product galleries ----------
+     Products shot from several angles carry a thumbnail strip that swaps the main photo. */
+  document.querySelectorAll(".shop-gallery").forEach(function (gallery) {
+    gallery.addEventListener("click", function (e) {
+      var thumbBtn = e.target.closest("button");
+      if (!thumbBtn) return;
+
+      var main = gallery.parentElement.querySelector(".shop-photo");
+      if (!main || main.getAttribute("src") === thumbBtn.dataset.src) return;
+
+      main.classList.add("is-swapping");
+      var next = new Image();
+      next.onload = function () {
+        main.src = thumbBtn.dataset.src;
+        main.classList.remove("is-swapping");
+      };
+      next.onerror = function () {
+        main.classList.remove("is-swapping");
+      };
+      next.src = thumbBtn.dataset.src;
+
+      gallery.querySelectorAll("button").forEach(function (b) {
+        b.classList.toggle("is-active", b === thumbBtn);
+      });
     });
   });
 
@@ -287,7 +317,7 @@
       var id = card.dataset.id;
       var thumb = card.querySelector(".shop-thumb");
       // Null once a missing photo has been dropped, so the bag falls back to the weave too.
-      var photo = card.querySelector(".shop-thumb img");
+      var photo = card.querySelector(".shop-photo");
 
       if (cart[id]) {
         cart[id].qty += 1;

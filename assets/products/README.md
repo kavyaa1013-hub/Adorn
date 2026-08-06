@@ -9,6 +9,7 @@ The filename must match the product's `data-id` in `index.html`, with a `.jpg` e
 
 | Product                     | Filename                  |
 | --------------------------- | ------------------------- |
+| Onyx Black Bedsheet Set     | `onyx-bedsheet.jpg` ✅     |
 | Indigo Jaal Bed Sheet       | `indigo-jaal.jpg`         |
 | Saffron Stripe Sheet Set    | `saffron-stripe.jpg`      |
 | Ivory Chanderi Duvet Cover  | `ivory-chanderi.jpg`      |
@@ -26,6 +27,21 @@ The filename must match the product's `data-id` in `index.html`, with a `.jpg` e
 - **Format:** `.jpg` for photographs. If you'd rather use `.webp` or `.png`, update the `src` on
   that product's `<img>` in `index.html` to match.
 - **Weight:** aim for under 300 KB each.
+
+✅ = photo supplied. Everything else still falls back to a woven pattern.
+
+## Extra angles
+
+A product photographed from several angles gets a thumbnail strip on its card. Name the extra
+shots with a `-2`, `-3`, `-4` suffix and add a matching `<button>` to that card's `.shop-gallery`
+in `index.html`. The Onyx Black Bedsheet Set is the worked example:
+
+```
+onyx-bedsheet.jpg     main image — made-up bed
+onyx-bedsheet-2.jpg   styled angle
+onyx-bedsheet-3.jpg   flat sheet and pillows
+onyx-bedsheet-4.jpg   fabric close-up
+```
 
 ## If a photo is missing
 
