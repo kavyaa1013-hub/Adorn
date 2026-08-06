@@ -898,25 +898,50 @@ section{ padding: 110px 0; }
 .shop-card{ cursor: pointer; }
 .shop-card:focus-visible{ outline: 2px solid var(--navy); outline-offset: 3px; }
 
-/* Hover cue that the card opens something */
+/* Standing cue that the card opens something. Kept visible rather than hover-only:
+   a hover-only affordance is invisible until you happen to hover, and never
+   appears at all on a touch screen. */
 .shop-thumb::after{
-  content: "Quick view";
+  content: "⤢ Quick view";
   position: absolute;
   top: 14px; right: 14px;
-  background: rgba(27,42,74,.9);
+  background: rgba(27,42,74,.82);
   color: var(--gold);
   font-size: .64rem;
   letter-spacing: .1em;
   text-transform: uppercase;
   padding: 6px 12px;
   border-radius: 999px;
-  opacity: 0;
-  transform: translateY(-6px);
-  transition: opacity .3s var(--ease), transform .3s var(--ease);
+  opacity: .92;
+  transition: opacity .3s var(--ease), background .3s var(--ease);
   pointer-events: none;
 }
 .shop-card:hover .shop-thumb::after,
-.shop-card:focus-visible .shop-thumb::after{ opacity: 1; transform: translateY(0); }
+.shop-card:focus-visible .shop-thumb::after{ opacity: 1; background: var(--navy); }
+
+/* The title reacts too, so the whole card reads as one interactive thing. */
+.shop-info h3{ transition: color .3s var(--ease); }
+.shop-card:hover .shop-info h3,
+.shop-card:focus-visible .shop-info h3{ color: var(--gold); }
+
+/* Marks a slot whose product details are still to come. */
+.shop-status{
+  position: absolute;
+  left: 14px; bottom: 14px;
+  background: rgba(255,255,255,.9);
+  color: var(--ink-soft);
+  font-size: .62rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border-radius: 999px;
+}
+.price-tbc{
+  font-family: var(--sans);
+  font-size: .84rem;
+  color: var(--ink-soft);
+  letter-spacing: .02em;
+}
 
 .modal-overlay{
   position: fixed; inset: 0;
@@ -1028,6 +1053,13 @@ section{ padding: 110px 0; }
   font-size: 2rem;
   color: var(--navy);
   font-variant-numeric: tabular-nums;
+}
+/* "Price on request" is a sentence, not a figure — don't set it like one. */
+.pm-price.is-tbc{
+  font-family: var(--sans);
+  font-size: 1rem;
+  color: var(--ink-soft);
+  letter-spacing: .02em;
 }
 
 .pm-points{

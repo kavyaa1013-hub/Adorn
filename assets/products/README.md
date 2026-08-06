@@ -10,6 +10,11 @@ The filename must match the product's `data-id` in `index.html`, with a `.jpg` e
 | Product                     | Filename                  |
 | --------------------------- | ------------------------- |
 | Onyx Black Bedsheet Set     | `onyx-bedsheet.jpg` ✅     |
+| Handloom Bedsheet Design 02 | `bedsheet-02.jpg`         |
+| Handloom Bedsheet Design 03 | `bedsheet-03.jpg`         |
+| Handloom Bedsheet Design 04 | `bedsheet-04.jpg`         |
+| Handloom Bedsheet Design 05 | `bedsheet-05.jpg`         |
+| Handloom Bedsheet Design 06 | `bedsheet-06.jpg`         |
 
 ## Sizing
 

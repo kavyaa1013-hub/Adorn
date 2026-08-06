@@ -44,10 +44,14 @@ data attributes: `data-id`, `data-name`, `data-price` (integer rupees), `data-ca
 `assets/products/<data-id>.jpg`. A missing photo is removed by `main.js` and the CSS weave
 pattern underneath shows instead — never a broken image.
 
-**Every product in the shop is real.** The eight invented placeholders were removed once the
-owner supplied a genuine product — do not reintroduce filler products with invented prices.
+Only the **Onyx Black Bedsheet Set** is a real, buyable product. The other cards are slots the
+owner asked for, marked `data-placeholder`: they carry no price, show "Coming soon" and "Price on
+request", and route to the enquiry form instead of the cart. Turn one into a real product by
+filling in `data-name`/`data-price`, dropping a photo at `assets/products/<data-id>.jpg`, swapping
+the Enquire button for `<button class="btn-cart" data-add>Add to Bag</button>`, and deleting the
+`data-placeholder` attribute.
 
-Never invent a price. Ask the owner.
+Never invent a price, and never give a placeholder one — ask the owner.
 
 `main.js` adapts the shop to however many products exist: category chips hide when that category
 is empty, the whole filter bar hides when only one category is represented, and a range of one or

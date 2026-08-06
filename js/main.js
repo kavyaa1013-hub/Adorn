@@ -156,10 +156,14 @@
     });
 
     if (wasHidden) {
-      var count = shopGrid ? shopGrid.querySelectorAll(".shop-card").length : 0;
+      // Only stock that can actually be bought counts as ready to ship — the rest
+      // of the grid is slots marked "coming soon".
+      var ready = shopGrid
+        ? shopGrid.querySelectorAll(".shop-card:not([data-placeholder])").length
+        : 0;
       showToast(
-        "Welcome to the Adorn store — " + count + " piece" +
-        (count === 1 ? "" : "s") + " ready to ship."
+        "Welcome to the Adorn store — " + ready + " piece" +
+        (ready === 1 ? "" : "s") + " ready to ship, more on the loom."
       );
     }
   }
@@ -367,8 +371,34 @@
     showToast(card.dataset.name + (qty > 1 ? " × " + qty : "") + " added to your bag.");
   }
 
+  /* A slot with no price yet can't go in a bag, so it routes to the enquiry form. */
+  function enquireAbout(card) {
+    var messageField = document.querySelector("#contactForm [name=message]");
+    var subjectField = document.querySelector("#contactForm [name=subject]");
+    var contact = document.getElementById("contact");
+
+    if (messageField) {
+      messageField.value = "I'd like to know more about: " + card.dataset.name +
+        "\n\nCould you send sizes, colours and pricing?";
+    }
+    if (subjectField) {
+      var subjects = { bedsheets: "Bed Sheets Order", carpets: "Carpet Order" };
+      subjectField.value = subjects[card.dataset.category] || "General Enquiry";
+    }
+
+    closeProduct();
+    if (contact) contact.scrollIntoView({ behavior: "smooth" });
+    showToast("Tell us what you need — the form below is ready.");
+  }
+
   if (shopGrid) {
     shopGrid.addEventListener("click", function (e) {
+      var enquireBtn = e.target.closest("[data-enquire]");
+      if (enquireBtn) {
+        enquireAbout(enquireBtn.closest(".shop-card"));
+        return;
+      }
+
       var btn = e.target.closest("[data-add]");
       if (btn) {
         var card = btn.closest(".shop-card");
@@ -413,6 +443,7 @@
   var pmDetail = document.getElementById("pmDetail");
   var pmPrice = document.getElementById("pmPrice");
   var pmQty = document.getElementById("pmQty");
+  var pmQtyRow = document.getElementById("pmQtyRow");
   var pmMinus = document.getElementById("pmMinus");
   var pmPlus = document.getElementById("pmPlus");
   var pmAdd = document.getElementById("pmAdd");
@@ -495,13 +526,19 @@
     var tag = card.querySelector(".tag");
     var detail = card.querySelector(".shop-info p");
     var price = card.querySelector(".price");
+    var isPlaceholder = card.hasAttribute("data-placeholder");
 
     pmCat.textContent = tag ? tag.textContent : "";
     pmTitle.textContent = card.dataset.name;
     pmDetail.textContent = detail ? detail.textContent : "";
-    pmPrice.textContent = price
-      ? price.textContent
-      : rupees(parseInt(card.dataset.price, 10));
+
+    // A slot without a price offers an enquiry rather than a quantity and a bag.
+    pmPrice.textContent = isPlaceholder
+      ? "Price on request"
+      : (price ? price.textContent : rupees(parseInt(card.dataset.price, 10)));
+    pmPrice.classList.toggle("is-tbc", isPlaceholder);
+    if (pmQtyRow) pmQtyRow.hidden = isPlaceholder;
+    pmAdd.textContent = isPlaceholder ? "Enquire About This Piece" : "Add to Bag";
 
     buildModalMedia(card);
     setQty(1);
@@ -539,6 +576,10 @@
   if (pmAdd) {
     pmAdd.addEventListener("click", function () {
       if (!activeCard) return;
+      if (activeCard.hasAttribute("data-placeholder")) {
+        enquireAbout(activeCard);
+        return;
+      }
       addProductToCart(activeCard, quantity);
       closeProduct();
     });
