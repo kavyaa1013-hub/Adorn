@@ -58,14 +58,16 @@ def build():
         body = body.replace(rel, "data:%s;base64,%s" % (MIME[ext], data))
         inlined += 1
 
+    # The host supplies the document skeleton, so the markup must not carry its own.
+    # Only the markup is checked — the same character sequences inside a CSS or JS
+    # comment are inert, and tripping on those would be a false alarm.
+    for tag in ("<html", "<head>", "<body", "</body>", "</html>"):
+        if tag in body:
+            raise SystemExit("preview markup must not contain %s — the host supplies it" % tag)
+
     page = "<title>%s</title>\n<style>\n%s\n%s\n</style>\n%s\n<script>\n%s\n</script>\n" % (
         TITLE, fonts, css, body, js
     )
-
-    # The host wraps this in its own <!doctype>/<html>/<head>/<body>.
-    for tag in ("<html", "<head>", "<body", "</body>", "</html>"):
-        if tag in page:
-            raise SystemExit("preview must not contain %s — the host supplies it" % tag)
 
     out = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_OUT
     os.makedirs(os.path.dirname(out), exist_ok=True)

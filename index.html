@@ -523,6 +523,45 @@
   </div>
 </footer>
 
+<!-- ===== PRODUCT QUICK VIEW ===== -->
+<div class="modal-overlay" id="productOverlay" hidden></div>
+
+<div class="product-modal" id="productModal" role="dialog" aria-modal="true"
+     aria-labelledby="pmTitle" hidden>
+  <button class="pm-close" id="pmClose" aria-label="Close product view">&times;</button>
+
+  <div class="pm-media">
+    <div class="pm-main" id="pmMain"></div>
+    <div class="pm-thumbs" id="pmThumbs"></div>
+  </div>
+
+  <div class="pm-info">
+    <p class="pm-cat" id="pmCat"></p>
+    <h3 id="pmTitle"></h3>
+    <p class="pm-detail" id="pmDetail"></p>
+    <span class="pm-price" id="pmPrice"></span>
+
+    <ul class="pm-points">
+      <li>Handwoven in small batches</li>
+      <li>Natural fibres, no synthetic blends</li>
+      <li>Free shipping across India above &#8377;5,000</li>
+    </ul>
+
+    <div class="pm-qty">
+      <span class="pm-qty-label">Quantity</span>
+      <div class="qty-control">
+        <button type="button" id="pmMinus" aria-label="Decrease quantity">&minus;</button>
+        <span id="pmQty" aria-live="polite">1</span>
+        <button type="button" id="pmPlus" aria-label="Increase quantity">+</button>
+      </div>
+    </div>
+
+    <button class="btn btn-primary pm-add" id="pmAdd">Add to Bag</button>
+    <p class="pm-note">Made to order &mdash; every piece carries the slight irregularities of the
+      handloom, which is how you know it was made rather than manufactured.</p>
+  </div>
+</div>
+
 <!-- ===== CART DRAWER ===== -->
 <div class="drawer-overlay" id="drawerOverlay" hidden></div>
 

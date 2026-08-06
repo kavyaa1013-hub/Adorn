@@ -132,6 +132,13 @@
     }, 2600);
   }
 
+  /* Dialogs cover the toast's corner, so clear it rather than let it peek out. */
+  function hideToast() {
+    if (!toast) return;
+    clearTimeout(toastTimer);
+    toast.classList.remove("is-visible");
+  }
+
   /* ---------- Shop reveal ---------- */
   var shopSection = document.getElementById("shop");
   var shopGrid = document.getElementById("shopGrid");
@@ -309,38 +316,221 @@
     cartCount.classList.add("bump");
   }
 
+  function addProductToCart(card, qty) {
+    var id = card.dataset.id;
+    var thumb = card.querySelector(".shop-thumb");
+    // Null once a missing photo has been dropped, so the bag falls back to the weave too.
+    var photo = card.querySelector(".shop-photo");
+
+    if (cart[id]) {
+      cart[id].qty += qty;
+    } else {
+      cart[id] = {
+        name: card.dataset.name,
+        price: parseInt(card.dataset.price, 10),
+        weave: thumb ? thumb.classList[1] : "",
+        image: photo ? photo.getAttribute("src") : "",
+        qty: qty
+      };
+    }
+
+    renderCart();
+    bumpCount();
+    showToast(card.dataset.name + (qty > 1 ? " × " + qty : "") + " added to your bag.");
+  }
+
   if (shopGrid) {
     shopGrid.addEventListener("click", function (e) {
       var btn = e.target.closest("[data-add]");
-      if (!btn) return;
-      var card = btn.closest(".shop-card");
-      var id = card.dataset.id;
-      var thumb = card.querySelector(".shop-thumb");
-      // Null once a missing photo has been dropped, so the bag falls back to the weave too.
-      var photo = card.querySelector(".shop-photo");
-
-      if (cart[id]) {
-        cart[id].qty += 1;
-      } else {
-        cart[id] = {
-          name: card.dataset.name,
-          price: parseInt(card.dataset.price, 10),
-          weave: thumb ? thumb.classList[1] : "",
-          image: photo ? photo.getAttribute("src") : "",
-          qty: 1
-        };
+      if (btn) {
+        var card = btn.closest(".shop-card");
+        addProductToCart(card, 1);
+        btn.classList.add("added");
+        btn.textContent = "Added ✓";
+        setTimeout(function () {
+          btn.classList.remove("added");
+          btn.textContent = "Add to Bag";
+        }, 1600);
+        return;
       }
+      // The thumbnail strip has its own handler — don't treat those as a card click.
+      if (e.target.closest(".shop-gallery")) return;
 
-      renderCart();
-      bumpCount();
-      showToast(card.dataset.name + " added to your bag.");
+      var openCard = e.target.closest(".shop-card");
+      if (openCard) openProduct(openCard);
+    });
+  }
 
-      btn.classList.add("added");
-      btn.textContent = "Added ✓";
-      setTimeout(function () {
-        btn.classList.remove("added");
-        btn.textContent = "Add to Bag";
-      }, 1600);
+  /* Cards open the quick view, so they need to behave like buttons for keyboards too. */
+  document.querySelectorAll(".shop-card").forEach(function (card) {
+    card.tabIndex = 0;
+    card.setAttribute("role", "button");
+    card.setAttribute("aria-label", "Quick view: " + card.dataset.name);
+    card.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        openProduct(card);
+      }
+    });
+  });
+
+  /* ---------- Product quick view ---------- */
+  var productModal = document.getElementById("productModal");
+  var productOverlay = document.getElementById("productOverlay");
+  var pmClose = document.getElementById("pmClose");
+  var pmMain = document.getElementById("pmMain");
+  var pmThumbs = document.getElementById("pmThumbs");
+  var pmCat = document.getElementById("pmCat");
+  var pmTitle = document.getElementById("pmTitle");
+  var pmDetail = document.getElementById("pmDetail");
+  var pmPrice = document.getElementById("pmPrice");
+  var pmQty = document.getElementById("pmQty");
+  var pmMinus = document.getElementById("pmMinus");
+  var pmPlus = document.getElementById("pmPlus");
+  var pmAdd = document.getElementById("pmAdd");
+
+  var activeCard = null;
+  var lastFocused = null;
+  var quantity = 1;
+  var MAX_QTY = 20;
+
+  function setQty(n) {
+    quantity = Math.min(MAX_QTY, Math.max(1, n));
+    if (pmQty) pmQty.textContent = quantity;
+    if (pmMinus) pmMinus.disabled = quantity <= 1;
+    if (pmPlus) pmPlus.disabled = quantity >= MAX_QTY;
+  }
+
+  function swapMainPhoto(mainImg, src) {
+    if (mainImg.getAttribute("src") === src) return;
+    mainImg.classList.add("is-swapping");
+    var pre = new Image();
+    pre.onload = function () {
+      mainImg.src = src;
+      mainImg.classList.remove("is-swapping");
+    };
+    pre.onerror = function () {
+      mainImg.classList.remove("is-swapping");
+    };
+    pre.src = src;
+  }
+
+  function buildModalMedia(card) {
+    var thumb = card.querySelector(".shop-thumb");
+    pmMain.className = "pm-main " + (thumb ? thumb.classList[1] : "");
+    pmMain.innerHTML = "";
+    pmThumbs.innerHTML = "";
+
+    // Prefer the gallery's full set; otherwise whatever single photo survived loading.
+    var sources = [];
+    var galleryBtns = card.querySelectorAll(".shop-gallery button");
+    if (galleryBtns.length) {
+      galleryBtns.forEach(function (b) { sources.push(b.dataset.src); });
+    } else {
+      var single = card.querySelector(".shop-photo");
+      if (single) sources.push(single.getAttribute("src"));
+    }
+    // No photos yet: the woven pattern on .pm-main stands in on its own.
+    if (!sources.length) return;
+
+    var main = document.createElement("img");
+    main.src = sources[0];
+    main.alt = card.dataset.name;
+    pmMain.appendChild(main);
+
+    if (sources.length < 2) return;
+
+    sources.forEach(function (src, i) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.setAttribute("aria-label", "View photo " + (i + 1) + " of " + sources.length);
+      if (i === 0) b.classList.add("is-active");
+      var im = document.createElement("img");
+      im.src = src;
+      im.alt = "";
+      b.appendChild(im);
+      b.addEventListener("click", function () {
+        swapMainPhoto(main, src);
+        pmThumbs.querySelectorAll("button").forEach(function (c) {
+          c.classList.toggle("is-active", c === b);
+        });
+      });
+      pmThumbs.appendChild(b);
+    });
+  }
+
+  function openProduct(card) {
+    if (!productModal) return;
+    activeCard = card;
+    lastFocused = document.activeElement;
+
+    var tag = card.querySelector(".tag");
+    var detail = card.querySelector(".shop-info p");
+    var price = card.querySelector(".price");
+
+    pmCat.textContent = tag ? tag.textContent : "";
+    pmTitle.textContent = card.dataset.name;
+    pmDetail.textContent = detail ? detail.textContent : "";
+    pmPrice.textContent = price
+      ? price.textContent
+      : rupees(parseInt(card.dataset.price, 10));
+
+    buildModalMedia(card);
+    setQty(1);
+    hideToast();
+
+    productOverlay.removeAttribute("hidden");
+    productModal.removeAttribute("hidden");
+    requestAnimationFrame(function () {
+      productOverlay.classList.add("is-visible");
+      productModal.classList.add("is-open");
+    });
+    // Locking the html element rather than body keeps the page scroll position.
+    document.documentElement.classList.add("modal-open");
+    pmClose.focus();
+  }
+
+  function closeProduct() {
+    if (!productModal || productModal.hasAttribute("hidden")) return;
+    productOverlay.classList.remove("is-visible");
+    productModal.classList.remove("is-open");
+    document.documentElement.classList.remove("modal-open");
+    setTimeout(function () {
+      productModal.setAttribute("hidden", "");
+      productOverlay.setAttribute("hidden", "");
+    }, 400);
+    if (lastFocused && lastFocused.focus) lastFocused.focus();
+    activeCard = null;
+  }
+
+  if (pmMinus) pmMinus.addEventListener("click", function () { setQty(quantity - 1); });
+  if (pmPlus) pmPlus.addEventListener("click", function () { setQty(quantity + 1); });
+  if (pmClose) pmClose.addEventListener("click", closeProduct);
+  if (productOverlay) productOverlay.addEventListener("click", closeProduct);
+
+  if (pmAdd) {
+    pmAdd.addEventListener("click", function () {
+      if (!activeCard) return;
+      addProductToCart(activeCard, quantity);
+      closeProduct();
+    });
+  }
+
+  /* Keep Tab inside the dialog while it is open. */
+  if (productModal) {
+    productModal.addEventListener("keydown", function (e) {
+      if (e.key !== "Tab") return;
+      var focusables = productModal.querySelectorAll("button:not(:disabled)");
+      if (!focusables.length) return;
+      var first = focusables[0];
+      var last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     });
   }
 
@@ -348,10 +538,7 @@
   function setDrawer(open) {
     if (!cartDrawer || !drawerOverlay) return;
     // The bag itself shows what was just added, so the toast would only overlap the footer.
-    if (open && toast) {
-      clearTimeout(toastTimer);
-      toast.classList.remove("is-visible");
-    }
+    if (open) hideToast();
     cartDrawer.classList.toggle("is-open", open);
     cartDrawer.setAttribute("aria-hidden", open ? "false" : "true");
     if (open) {
@@ -372,7 +559,9 @@
   if (cartClose) cartClose.addEventListener("click", function () { setDrawer(false); });
   if (drawerOverlay) drawerOverlay.addEventListener("click", function () { setDrawer(false); });
   document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape") setDrawer(false);
+    if (e.key !== "Escape") return;
+    closeProduct();
+    setDrawer(false);
   });
 
   /* Checkout hands off to the contact form — there is no payment backend. */

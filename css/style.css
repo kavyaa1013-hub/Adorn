@@ -34,6 +34,10 @@ body{
 
 body.lock-scroll{ overflow: hidden; height: 100vh; }
 
+/* Used while a dialog is open. Locking the html element rather than body means the
+   page keeps its scroll position instead of jumping to the top. */
+html.modal-open{ overflow: hidden; }
+
 img{ max-width:100%; display:block; }
 
 .container{
@@ -883,6 +887,211 @@ section{ padding: 110px 0; }
 }
 
 /* =========================================================
+   PRODUCT QUICK VIEW
+   ========================================================= */
+.shop-card{ cursor: pointer; }
+.shop-card:focus-visible{ outline: 2px solid var(--navy); outline-offset: 3px; }
+
+/* Hover cue that the card opens something */
+.shop-thumb::after{
+  content: "Quick view";
+  position: absolute;
+  top: 14px; right: 14px;
+  background: rgba(27,42,74,.9);
+  color: var(--gold);
+  font-size: .64rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border-radius: 999px;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity .3s var(--ease), transform .3s var(--ease);
+  pointer-events: none;
+}
+.shop-card:hover .shop-thumb::after,
+.shop-card:focus-visible .shop-thumb::after{ opacity: 1; transform: translateY(0); }
+
+.modal-overlay{
+  position: fixed; inset: 0;
+  background: rgba(16,27,51,.5);
+  backdrop-filter: blur(4px);
+  z-index: 940;
+  opacity: 0;
+  transition: opacity .35s var(--ease);
+}
+.modal-overlay.is-visible{ opacity: 1; }
+
+.product-modal{
+  position: fixed;
+  top: 50%; left: 50%;
+  width: min(920px, calc(100vw - 40px));
+  max-height: min(88vh, 640px);
+  transform: translate(-50%, -46%) scale(.97);
+  background: var(--ivory);
+  border-radius: 18px;
+  box-shadow: 0 40px 80px -40px rgba(16,27,51,.75);
+  z-index: 960;
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity .4s var(--ease), transform .4s var(--ease);
+}
+.product-modal.is-open{ opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+.pm-close{
+  position: absolute;
+  top: 14px; right: 16px;
+  z-index: 2;
+  width: 36px; height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255,255,255,.9);
+  color: var(--navy);
+  font-size: 1.7rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background .3s, color .3s;
+}
+.pm-close:hover{ background: var(--navy); color: var(--gold); }
+
+.pm-media{
+  background: var(--pastel-blue);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.pm-main{
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  background-color: var(--pastel-blue);
+}
+.pm-main img{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity .3s var(--ease);
+}
+.pm-main img.is-swapping{ opacity: 0; }
+
+.pm-thumbs{
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  flex: none;
+}
+.pm-thumbs:empty{ display: none; }
+.pm-thumbs button{
+  width: 60px; height: 46px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 7px;
+  overflow: hidden;
+  background: none;
+  line-height: 0;
+  cursor: pointer;
+  transition: border-color .25s var(--ease), transform .25s var(--ease);
+}
+.pm-thumbs button img{ width: 100%; height: 100%; object-fit: cover; display: block; }
+.pm-thumbs button:hover{ transform: translateY(-2px); }
+.pm-thumbs button.is-active{ border-color: var(--gold); }
+.pm-thumbs button:focus-visible{ outline: 2px solid var(--navy); outline-offset: 2px; }
+
+.pm-info{
+  padding: 38px 34px 34px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.pm-cat{
+  font-size: .68rem;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin: 0 0 10px;
+}
+.pm-info h3{ font-size: 1.9rem; margin: 0 0 10px; }
+.pm-detail{ font-size: .92rem; margin: 0 0 16px; }
+.pm-price{
+  font-family: var(--serif);
+  font-size: 2rem;
+  color: var(--navy);
+  font-variant-numeric: tabular-nums;
+}
+
+.pm-points{
+  margin: 22px 0;
+  display: grid;
+  gap: 9px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(27,42,74,.1);
+}
+.pm-points li{
+  position: relative;
+  padding-left: 24px;
+  font-size: .87rem;
+  color: var(--ink-soft);
+}
+.pm-points li::before{
+  content: "";
+  position: absolute; left: 0; top: 5px;
+  width: 13px; height: 7px;
+  border-left: 2px solid var(--gold);
+  border-bottom: 2px solid var(--gold);
+  transform: rotate(-45deg);
+}
+
+.pm-qty{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.pm-qty-label{
+  font-size: .74rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.qty-control{
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid rgba(27,42,74,.18);
+  border-radius: 999px;
+  padding: 4px;
+  background: var(--white);
+}
+.qty-control button{
+  width: 34px; height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--navy);
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background .25s, color .25s;
+}
+.qty-control button:hover{ background: var(--navy); color: var(--gold); }
+.qty-control button:disabled{ opacity: .3; cursor: not-allowed; background: transparent; color: var(--navy); }
+.qty-control span{
+  min-width: 30px;
+  text-align: center;
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.pm-add{ justify-content: center; width: 100%; margin-top: auto; }
+.pm-note{ font-size: .76rem; line-height: 1.6; margin: 14px 0 0; text-align: center; }
+
+/* =========================================================
    CART DRAWER
    ========================================================= */
 .drawer-overlay{
@@ -1051,6 +1260,14 @@ section{ padding: 110px 0; }
   .story-visual{ order: -1; }
   .contact-layout{ grid-template-columns: 1fr; }
   .shop-grid{ grid-template-columns: repeat(2, 1fr); }
+  /* Stack the quick view so the photo keeps a usable height on narrow screens */
+  .product-modal{
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    max-height: 88vh;
+  }
+  .pm-media{ min-height: 240px; }
+  .pm-main{ min-height: 200px; }
 }
 
 @media (max-width: 760px){
@@ -1074,6 +1291,9 @@ section{ padding: 110px 0; }
   .shop-grid{ grid-template-columns: 1fr; }
   .shop-filters{ gap: 8px; }
   .filter-chip{ padding: 9px 16px; font-size: .74rem; }
+  .pm-info{ padding: 26px 22px 24px; }
+  .pm-info h3{ font-size: 1.55rem; }
+  .pm-points{ margin: 18px 0; }
   .feature-grid{ grid-template-columns: 1fr; text-align:center; }
   .feature svg{ margin-left:auto; margin-right:auto; }
   .story-stats{ grid-template-columns: 1fr 1fr; }
