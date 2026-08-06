@@ -158,6 +158,16 @@
     });
   });
 
+  /* ---------- Product photos ----------
+     Each card ships with an <img> pointing at assets/products/<id>.jpg. Until that
+     file exists the image fails to load, so we remove it and the woven CSS pattern
+     underneath stays on show. Drop a photo in with the matching name and it appears. */
+  document.querySelectorAll(".shop-thumb img").forEach(function (img) {
+    img.addEventListener("error", function () {
+      img.remove();
+    });
+  });
+
   /* ---------- Category filters ---------- */
   var shopFilters = document.getElementById("shopFilters");
   if (shopFilters && shopGrid) {
@@ -225,6 +235,12 @@
           "<span></span>" +
           '<button type="button" data-step="1" aria-label="Increase quantity">+</button>' +
           "</div>";
+        if (item.image) {
+          var thumbImg = document.createElement("img");
+          thumbImg.src = item.image;
+          thumbImg.alt = "";
+          row.querySelector(".cart-thumb").appendChild(thumbImg);
+        }
         row.querySelector("h4").textContent = item.name;
         row.querySelector(".cart-price").textContent = rupees(item.price);
         row.querySelector(".qty span").textContent = item.qty;
@@ -270,6 +286,8 @@
       var card = btn.closest(".shop-card");
       var id = card.dataset.id;
       var thumb = card.querySelector(".shop-thumb");
+      // Null once a missing photo has been dropped, so the bag falls back to the weave too.
+      var photo = card.querySelector(".shop-thumb img");
 
       if (cart[id]) {
         cart[id].qty += 1;
@@ -278,6 +296,7 @@
           name: card.dataset.name,
           price: parseInt(card.dataset.price, 10),
           weave: thumb ? thumb.classList[1] : "",
+          image: photo ? photo.getAttribute("src") : "",
           qty: 1
         };
       }

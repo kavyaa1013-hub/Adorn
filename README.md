@@ -32,6 +32,14 @@ Products live directly in `index.html` as `.shop-card` articles. Each one carrie
 `data-name`, `data-price` (integer rupees) and `data-category`, which is all the cart and filters
 read — so adding a product is just copying a card and editing those attributes.
 
+### Product photos
+
+Every card points at `assets/products/<data-id>.jpg`. Drop a file with that name into
+`assets/products/` and the photo appears — no code change needed. Until the file exists, `main.js`
+removes the broken image and the CSS-drawn weave pattern behind it shows instead, so missing
+photos never leave holes in the grid. See `assets/products/README.md` for the filename list and
+sizing guidance (4:3 landscape, ~1200×900, under 300 KB).
+
 ## Structure
 
 ```
