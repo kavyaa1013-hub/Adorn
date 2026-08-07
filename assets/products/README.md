@@ -15,6 +15,16 @@ The filename must match the product's `data-id` in `index.html`, with a `.jpg` e
 | Handloom Bedsheet Design 04 | `bedsheet-04.jpg`         |
 | Handloom Bedsheet Design 05 | `bedsheet-05.jpg`         |
 | Handloom Bedsheet Design 06 | `bedsheet-06.jpg`         |
+| Handloom Carpet Design 01   | `carpet-01.jpg`           |
+| Handloom Carpet Design 02   | `carpet-02.jpg`           |
+| Handloom Carpet Design 03   | `carpet-03.jpg`           |
+| Handloom Carpet Design 04   | `carpet-04.jpg`           |
+| Handloom Carpet Design 05   | `carpet-05.jpg`           |
+| Herbal Preparation 01       | `herbal-01.jpg`           |
+| Herbal Preparation 02       | `herbal-02.jpg`           |
+| Herbal Preparation 03       | `herbal-03.jpg`           |
+| Herbal Preparation 04       | `herbal-04.jpg`           |
+| Herbal Preparation 05       | `herbal-05.jpg`           |
 
 ## Sizing
 

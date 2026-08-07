@@ -67,5 +67,13 @@ and Carpets sections.
 
 ## Visual work
 
-There are no product photos for most of the range, so visuals are drawn in CSS (`.weave-*`,
-`.pattern-*`). Keep it that way rather than reaching for stock imagery.
+There are no product photos for most of the range, so visuals are drawn in CSS. Each range has
+its own set, and a card picks one by class: `.weave-1`–`8` for bed linen, `.rug-1`–`5` for carpets,
+`.herb-1`–`5` for the herbal range (botanical and sage rather than gridded, since it is the one
+range that is not woven). `.pattern-*` covers the larger section grounds. Keep it that way rather
+than reaching for stock imagery.
+
+Build these from gradients that actually tile. `repeating-conic-gradient` and
+`repeating-radial-gradient` fan out from a single point, so they render as one wedge or one set of
+rings across the card rather than a motif — use `background-size` with a plain `radial-gradient`
+for dot and leaf fields instead.
