@@ -23,7 +23,6 @@
 
   --pastel-blue: #22262b;
   --pastel-rose: #2f2a2c;
-  --pastel-sage: #29312c;
 
   --radius: 14px;
   --shadow: 0 22px 44px -20px rgba(0, 0, 0, 0.55);
@@ -367,7 +366,8 @@ section{ padding: 110px 0; }
    ========================================================= */
 .collection-grid{
   display:grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 380px));
+  justify-content: center;
   gap: 30px;
   margin-top: 20px;
 }
@@ -404,14 +404,6 @@ section{ padding: 110px 0; }
   background:
     repeating-radial-gradient(circle at 20px 20px, rgba(205,164,73,.25) 0 4px, transparent 4px 22px),
     linear-gradient(135deg, #3a3339, #2f2b31);
-}
-/* The herbal range is the one thing not woven, so it gets a botanical ground
-   rather than a weave — a sage tint kept quiet enough to sit beside the rest. */
-.pattern-herbal{
-  background:
-    repeating-radial-gradient(circle at 30px 30px, rgba(122,148,116,.22) 0 5px, transparent 5px 30px),
-    repeating-linear-gradient(70deg, rgba(205,164,73,.16) 0 3px, transparent 3px 26px),
-    linear-gradient(135deg, #2f3934, #28312c);
 }
 .pattern-bedsheet-lg, .pattern-carpet-lg{
   height: 100%;
@@ -706,7 +698,8 @@ section{ padding: 110px 0; }
 /* Step one: pick a range */
 .category-grid{
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 380px));
+  justify-content: center;
   gap: 26px;
 }
 .category-tile{
@@ -1234,41 +1227,6 @@ section{ padding: 110px 0; }
     linear-gradient(135deg, #383d46, #30353d);
 }
 
-/* Herbal grounds — the one range that isn't woven, so these are botanical
-   rather than gridded, and sit in sage instead of the blue-golds. */
-.herb-1{
-  background:
-    repeating-radial-gradient(circle at 24px 24px, rgba(122,148,116,.3) 0 5px, transparent 5px 26px),
-    linear-gradient(135deg, #2f3934, #28312c);
-}
-.herb-2{
-  background:
-    repeating-linear-gradient(90deg, rgba(163,196,158,.26) 0 2px, transparent 2px 17px),
-    repeating-radial-gradient(circle at 40px 12px, rgba(205,164,73,.2) 0 4px, transparent 4px 40px),
-    linear-gradient(135deg, #2f3934, #28312c);
-}
-.herb-3{
-  background-image:
-    radial-gradient(ellipse 9px 3.5px at 50% 50%, rgba(163,196,158,.34) 0 58%, transparent 60%),
-    radial-gradient(ellipse 3.5px 9px at 50% 50%, rgba(163,196,158,.22) 0 58%, transparent 60%),
-    linear-gradient(135deg, #2f3934, #28312c);
-  background-size: 28px 28px, 28px 28px, auto;
-  background-position: 0 0, 14px 14px, 0 0;
-}
-.herb-4{
-  background:
-    repeating-linear-gradient(115deg, rgba(163,196,158,.28) 0 3px, transparent 3px 19px),
-    repeating-linear-gradient(65deg, rgba(205,164,73,.18) 0 3px, transparent 3px 30px),
-    linear-gradient(135deg, #2f3934, #28312c);
-}
-.herb-5{
-  background-image:
-    radial-gradient(circle, rgba(163,196,158,.36) 0 2.5px, transparent 3px),
-    radial-gradient(circle, rgba(205,164,73,.3) 0 1.5px, transparent 2px),
-    linear-gradient(135deg, #2f3934, #28312c);
-  background-size: 23px 23px, 23px 23px, auto;
-  background-position: 0 0, 11.5px 11.5px, 0 0;
-}
 
 /* =========================================================
    CART DRAWER
@@ -1440,7 +1398,7 @@ section{ padding: 110px 0; }
   .story-visual{ order: -1; }
   .contact-layout{ grid-template-columns: 1fr; }
   .shop-grid{ grid-template-columns: repeat(2, 1fr); }
-  .category-grid{ grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .category-grid{ grid-template-columns: repeat(2, 1fr); gap: 18px; }
   .category-visual{ height: 150px; }
   .category-body{ padding: 20px; }
   /* Stack the quick view so the photo keeps a usable height on narrow screens */

@@ -53,11 +53,18 @@ Two traps this theme sets:
 
 Each product is a `.shop-card` article in `index.html`. The cart and filters read only its
 data attributes: `data-id`, `data-name`, `data-price` (integer rupees), `data-category`
-(`bedsheets` | `carpets` | `herbal`). Photos resolve by convention from `data-id`:
+(`bedsheets` | `carpets`). Photos resolve by convention from `data-id`:
 `assets/products/<data-id>.jpg`. A missing photo is removed by `main.js` and the CSS weave
 pattern underneath shows instead — never a broken image.
 
-Only the **Onyx Black Bedsheet Set** is a real, buyable product. The other cards are slots the
+The **Onyx Black Bedsheet Set** is the only product with a confirmed price, so it is the only
+one that can go in the bag. The four **Damas** colourways are real and photographed but priced
+`data-placeholder` until the owner supplies figures — they show "Price on request" and route to
+the enquiry form, and carry no "Coming soon" pill since they are not forthcoming, just unpriced.
+Their photos are supplier catalogue shots still carrying another company's branding; see
+`assets/products/README.md`.
+
+Otherwise: The other cards are slots the
 owner asked for, marked `data-placeholder`: they carry no price, show "Coming soon" and "Price on
 request", and route to the enquiry form instead of the cart. Turn one into a real product by
 filling in `data-name`/`data-price`, dropping a photo at `assets/products/<data-id>.jpg`, swapping
@@ -66,12 +73,12 @@ the Enquire button for `<button class="btn-cart" data-add>Add to Bag</button>`, 
 
 Never invent a price, and never give a placeholder one — ask the owner.
 
-The shop opens on a chooser of three ranges — Bed Sheets, Carpets, Herbal Products — and picking
+The shop opens on a chooser of two ranges — Bed Sheets and Carpets — and picking
 one swaps in just that range's cards. `main.js` derives everything from the cards themselves: each
 tile's count line, an empty state for a range with nothing in it, and a narrower centred grid when
 a range holds one or two pieces. So adding a product is a matter of editing `index.html` alone.
 
-A `data-shop-open` trigger may name a range (`data-shop-open="herbal"`) to jump straight into it;
+A `data-shop-open` trigger may name a range (`data-shop-open="carpets"`) to jump straight into it;
 without a value it opens the chooser.
 
 Copy elsewhere on the page is still placeholder marketing text the owner has not confirmed —
@@ -81,10 +88,9 @@ and Carpets sections.
 ## Visual work
 
 There are no product photos for most of the range, so visuals are drawn in CSS. Each range has
-its own set, and a card picks one by class: `.weave-1`–`8` for bed linen, `.rug-1`–`5` for carpets,
-`.herb-1`–`5` for the herbal range (botanical and sage rather than gridded, since it is the one
-range that is not woven). `.pattern-*` covers the larger section grounds. Keep it that way rather
-than reaching for stock imagery.
+its own set, and a card picks one by class: `.weave-1`–`8` for bed linen and `.rug-1`–`5` for
+carpets. `.pattern-*` covers the larger section grounds. Keep it that way rather than reaching
+for stock imagery.
 
 Build these from gradients that actually tile. `repeating-conic-gradient` and
 `repeating-radial-gradient` fan out from a single point, so they render as one wedge or one set of

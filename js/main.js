@@ -220,7 +220,7 @@
   });
 
   /* ---------- Ranges ----------
-     The shop opens on the three ranges rather than a wall of products; picking one
+     The shop opens on the ranges rather than a wall of products; picking one
      swaps in just that range's pieces. */
   var categoryGrid = document.getElementById("categoryGrid");
   var shopProducts = document.getElementById("shopProducts");
@@ -232,8 +232,7 @@
 
   var CATEGORY_NAMES = {
     bedsheets: "Bed Sheets",
-    carpets: "Carpets",
-    herbal: "Herbal Products"
+    carpets: "Carpets"
   };
   var HEADING_DEFAULT = shopHeading ? shopHeading.textContent : "";
   var SUB_DEFAULT = shopSub ? shopSub.textContent : "";
@@ -262,6 +261,8 @@
       var ready = readyIn(category);
       if (!total) {
         meta.textContent = "Coming soon";
+      } else if (ready && total > ready) {
+        meta.textContent = ready + " ready to ship \u00b7 " + (total - ready) + " more";
       } else if (ready) {
         meta.textContent = ready + " ready to ship";
       } else {
