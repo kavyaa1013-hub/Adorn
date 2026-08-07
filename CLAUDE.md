@@ -30,11 +30,13 @@ assets/products/         Product photos (see the README in there)
 tools/build-preview.py   Bundles the preview
 ```
 
-The page is deliberately short: hero, feature strip, the two range sections, the shop, the craft
-story, newsletter, contact, footer. There is no nav — the first screen carries one call to action,
-Shop Now, and the header's copy of it stays hidden until the hero is scrolled past. A collections
-section and a testimonials block used to sit here; the first duplicated the range chooser exactly
-and the second was invented reviews. Don't reintroduce either.
+The landing screen is one screen: the wordmark, a line of copy and **Shop Now**. Nothing sits
+below it — there is no nav, no scroll, and `#contact` and the footer carry `hidden` until
+`openShop()` reveals them alongside the shop. Everything else that used to be on this page (a
+feature strip, two range detail sections, a craft story, a newsletter block, a collections grid
+and a testimonials block) has been removed at the owner's request. Don't reintroduce any of it.
+
+The whole site is therefore: landing → the two ranges → a range's products → enquiry form.
 
 ## Palette and type
 

@@ -96,6 +96,12 @@
     var wasHidden = shopSection.hasAttribute("hidden");
     shopSection.removeAttribute("hidden");
 
+    // The landing screen is the button and nothing else, so the form and footer
+    // stay out of the page until there is a reason to scroll.
+    document.querySelectorAll("#contact, .site-footer").forEach(function (el) {
+      el.removeAttribute("hidden");
+    });
+
     if (category && CATEGORY_NAMES[category]) {
       showRange(category);
     } else {
