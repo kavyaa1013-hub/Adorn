@@ -32,9 +32,14 @@ tools/build-preview.py   Bundles the preview
 
 ## Palette and type
 
-White/pastel grounds (`--ivory`, `--pastel-blue`, `--pastel-rose`) with dark navy `#1b2a4a` and
-gold `#cda449` from the logo. Cormorant Garamond for headings, Jost for body. All tokens are
-custom properties at the top of `css/style.css` — change them there, not at call sites.
+Light grey ground (`--grey-light`, `#f2f3f5`) with a faint navy bias, alternating with a cooler,
+deeper `--pastel-blue` for banded sections; cards stay white so they lift off both. Dark navy
+`#1b2a4a` and gold `#cda449` from the logo carry the accents. Cormorant Garamond for headings,
+Jost for body. All tokens are custom properties at the top of `css/style.css` — change them there,
+not at call sites.
+
+The grey is cool, so warm decorative fills read as yellow against it. Anything new should be
+mixed against `--grey-light` rather than borrowed from the old cream palette.
 
 ## Products
 

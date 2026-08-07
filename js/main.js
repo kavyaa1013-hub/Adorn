@@ -20,7 +20,7 @@
 
   // Auto-dismiss after the animation has had time to play,
   // or immediately on click/keypress for impatient visitors.
-  var introTimer = setTimeout(endIntro, 1500);
+  var introTimer = setTimeout(endIntro, 900);
   if (intro) {
     intro.addEventListener("click", function () {
       clearTimeout(introTimer);
