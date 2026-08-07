@@ -40,7 +40,7 @@ custom properties at the top of `css/style.css` — change them there, not at ca
 
 Each product is a `.shop-card` article in `index.html`. The cart and filters read only its
 data attributes: `data-id`, `data-name`, `data-price` (integer rupees), `data-category`
-(`bedsheets` | `carpets` | `cushions`). Photos resolve by convention from `data-id`:
+(`bedsheets` | `carpets` | `herbal`). Photos resolve by convention from `data-id`:
 `assets/products/<data-id>.jpg`. A missing photo is removed by `main.js` and the CSS weave
 pattern underneath shows instead — never a broken image.
 
@@ -53,10 +53,13 @@ the Enquire button for `<button class="btn-cart" data-add>Add to Bag</button>`, 
 
 Never invent a price, and never give a placeholder one — ask the owner.
 
-`main.js` adapts the shop to however many products exist: category chips hide when that category
-is empty, the whole filter bar hides when only one category is represented, and a range of one or
-two pieces is centred rather than stranded across four columns. So adding or removing a product
-is a matter of editing `index.html` alone.
+The shop opens on a chooser of three ranges — Bed Sheets, Carpets, Herbal Products — and picking
+one swaps in just that range's cards. `main.js` derives everything from the cards themselves: each
+tile's count line, an empty state for a range with nothing in it, and a narrower centred grid when
+a range holds one or two pieces. So adding a product is a matter of editing `index.html` alone.
+
+A `data-shop-open` trigger may name a range (`data-shop-open="herbal"`) to jump straight into it;
+without a value it opens the chooser.
 
 Copy elsewhere on the page is still placeholder marketing text the owner has not confirmed —
 the hero and story statistics, the testimonials, and the colour-swatch names in the Bed Sheets

@@ -20,7 +20,7 @@
 
   // Auto-dismiss after the animation has had time to play,
   // or immediately on click/keypress for impatient visitors.
-  var introTimer = setTimeout(endIntro, 2600);
+  var introTimer = setTimeout(endIntro, 1500);
   if (intro) {
     intro.addEventListener("click", function () {
       clearTimeout(introTimer);
@@ -143,11 +143,18 @@
   var shopSection = document.getElementById("shop");
   var shopGrid = document.getElementById("shopGrid");
 
-  function openShop() {
+  /* A trigger may name a range to jump straight into; without one the shop
+     opens on the range chooser. */
+  function openShop(category) {
     if (!shopSection) return;
     var wasHidden = shopSection.hasAttribute("hidden");
     shopSection.removeAttribute("hidden");
-    if (shopGrid) shopGrid.classList.add("is-open");
+
+    if (category && CATEGORY_NAMES[category]) {
+      showRange(category);
+    } else {
+      showRanges();
+    }
 
     // Wait a frame so the newly shown section has a real offsetTop.
     requestAnimationFrame(function () {
@@ -171,7 +178,7 @@
   document.querySelectorAll("[data-shop-open]").forEach(function (trigger) {
     trigger.addEventListener("click", function (e) {
       e.preventDefault();
-      openShop();
+      openShop(trigger.getAttribute("data-shop-open"));
     });
   });
 
@@ -212,52 +219,103 @@
     });
   });
 
-  /* ---------- Category filters ---------- */
-  var shopFilters = document.getElementById("shopFilters");
-  if (shopGrid) {
-    var cards = Array.prototype.slice.call(shopGrid.querySelectorAll(".shop-card"));
+  /* ---------- Ranges ----------
+     The shop opens on the three ranges rather than a wall of products; picking one
+     swaps in just that range's pieces. */
+  var categoryGrid = document.getElementById("categoryGrid");
+  var shopProducts = document.getElementById("shopProducts");
+  var shopEmpty = document.getElementById("shopEmpty");
+  var shopNote = document.getElementById("shopNote");
+  var shopHeading = document.getElementById("shopHeading");
+  var shopSub = document.getElementById("shopSub");
+  var backToCategories = document.getElementById("backToCategories");
+
+  var CATEGORY_NAMES = {
+    bedsheets: "Bed Sheets",
+    carpets: "Carpets",
+    herbal: "Herbal Products"
+  };
+  var HEADING_DEFAULT = shopHeading ? shopHeading.textContent : "";
+  var SUB_DEFAULT = shopSub ? shopSub.textContent : "";
+
+  var cards = shopGrid
+    ? Array.prototype.slice.call(shopGrid.querySelectorAll(".shop-card"))
+    : [];
+
+  function countIn(category) {
+    return cards.filter(function (card) {
+      return card.dataset.category === category;
+    }).length;
+  }
+
+  function readyIn(category) {
+    return cards.filter(function (card) {
+      return card.dataset.category === category && !card.hasAttribute("data-placeholder");
+    }).length;
+  }
+
+  // Say what is actually in each range, so a tile never oversells itself.
+  if (categoryGrid) {
+    categoryGrid.querySelectorAll("[data-count-for]").forEach(function (meta) {
+      var category = meta.dataset.countFor;
+      var total = countIn(category);
+      var ready = readyIn(category);
+      if (!total) {
+        meta.textContent = "Coming soon";
+      } else if (ready) {
+        meta.textContent = ready + " ready to ship";
+      } else {
+        meta.textContent = total + " on the way";
+      }
+    });
+  }
+
+  function showRange(category) {
+    var shown = 0;
+    cards.forEach(function (card) {
+      var match = card.dataset.category === category;
+      card.classList.toggle("is-filtered", !match);
+      if (match) card.style.setProperty("--i", shown++);
+    });
 
     // One or two pieces look stranded across a four-column grid, so narrow and centre it.
-    function reflow(visible) {
-      shopGrid.classList.toggle("is-sparse", visible > 0 && visible < 3);
+    if (shopGrid) {
+      shopGrid.classList.toggle("is-sparse", shown > 0 && shown < 3);
+      shopGrid.hidden = shown === 0;
+      // Restart the staggered entrance so each range animates in as it is chosen.
+      shopGrid.classList.remove("is-open");
+      void shopGrid.offsetWidth;
+      shopGrid.classList.add("is-open");
     }
-    reflow(cards.length);
+    if (shopEmpty) shopEmpty.hidden = shown > 0;
+    // Shipping and tax terms only mean something once there is something to buy.
+    if (shopNote) shopNote.hidden = shown === 0;
+    if (shopHeading) shopHeading.textContent = CATEGORY_NAMES[category] || HEADING_DEFAULT;
+    if (shopSub) shopSub.hidden = true;
 
-    if (shopFilters) {
-      // Only offer a category that has something in it — a filter leading to an
-      // empty grid is worse than no filter at all. Chips come back on their own
-      // as products in that category are added.
-      var represented = 0;
-      shopFilters.querySelectorAll(".filter-chip").forEach(function (chip) {
-        if (chip.dataset.filter === "all") return;
-        var inCategory = cards.filter(function (card) {
-          return card.dataset.category === chip.dataset.filter;
-        }).length;
-        chip.hidden = inCategory === 0;
-        if (inCategory) represented++;
-      });
-      // With everything sitting in one category there is nothing to filter between.
-      shopFilters.hidden = represented < 2;
+    if (categoryGrid) categoryGrid.hidden = true;
+    if (shopProducts) shopProducts.hidden = false;
+  }
 
-      shopFilters.addEventListener("click", function (e) {
-        var chip = e.target.closest(".filter-chip");
-        if (!chip) return;
-        var filter = chip.dataset.filter;
-
-        shopFilters.querySelectorAll(".filter-chip").forEach(function (c) {
-          c.classList.toggle("is-active", c === chip);
-        });
-
-        var shown = 0;
-        cards.forEach(function (card) {
-          var match = filter === "all" || card.dataset.category === filter;
-          card.classList.toggle("is-filtered", !match);
-          if (match) card.style.setProperty("--i", shown++);
-        });
-        reflow(shown);
-      });
+  function showRanges() {
+    if (categoryGrid) categoryGrid.hidden = false;
+    if (shopProducts) shopProducts.hidden = true;
+    if (shopHeading) shopHeading.textContent = HEADING_DEFAULT;
+    if (shopSub) {
+      shopSub.textContent = SUB_DEFAULT;
+      shopSub.hidden = false;
     }
   }
+
+  if (categoryGrid) {
+    categoryGrid.addEventListener("click", function (e) {
+      var tile = e.target.closest(".category-tile");
+      if (!tile) return;
+      showRange(tile.dataset.category);
+    });
+  }
+
+  if (backToCategories) backToCategories.addEventListener("click", showRanges);
 
   /* ---------- Cart ---------- */
   var cart = {};

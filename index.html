@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Adorn | Handloom Bed Sheets &amp; Carpets</title>
-<meta name="description" content="Adorn — heritage handloom bed sheets, carpets and home textiles, woven by artisans with pure cotton and timeless craft.">
+<meta name="description" content="Adorn — heritage handloom bed sheets and carpets, plus naturally made herbal preparations, from artisan hands.">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,11 +19,6 @@
 <!-- ===== INTRO ANIMATION ===== -->
 <div id="intro" aria-hidden="true">
   <div class="intro-inner">
-    <svg class="intro-motif" width="70" height="70" viewBox="0 0 70 70" fill="none">
-      <circle cx="35" cy="35" r="33" stroke="#cda449" stroke-width="1.2"/>
-      <path d="M35 6 L35 64 M6 35 L64 35" stroke="#cda449" stroke-width="0.6" opacity="0.6"/>
-      <circle cx="35" cy="35" r="18" stroke="#cda449" stroke-width="1.2"/>
-    </svg>
     <h1 class="intro-word" aria-label="Adorn">
       <span style="--i:0">A</span><span style="--i:1">d</span><span style="--i:2">o</span><span style="--i:3">r</span><span style="--i:4">n</span>
     </h1>
@@ -74,18 +69,11 @@
       <p class="eyebrow reveal">Est. in the looms of India</p>
       <h1 class="hero-title reveal">Threads of Heritage,<br>Woven for <em>Home</em></h1>
       <p class="hero-sub reveal">
-        Adorn crafts handloom bed sheets, carpets &amp; home textiles — spun from pure
-        cotton and dyed by hand, carrying forward generations of weaving artistry.
+        Handloom bed sheets and carpets, spun from pure cotton and dyed by hand,
+        alongside herbal preparations made the same unhurried way.
       </p>
       <div class="hero-cta reveal">
-        <button class="btn btn-primary" data-shop-open>Shop the Collection</button>
-        <a href="#collections" class="btn btn-ghost">Browse Collections</a>
-      </div>
-
-      <div class="hero-stats reveal">
-        <div><strong>25+</strong><span>Years of Craft</span></div>
-        <div><strong>120+</strong><span>Artisan Weavers</span></div>
-        <div><strong>100%</strong><span>Pure Cotton</span></div>
+        <button class="btn btn-primary btn-lg" data-shop-open>Shop Now</button>
       </div>
     </div>
     <a href="#collections" class="scroll-cue" aria-label="Scroll down"><span></span></a>
@@ -142,12 +130,12 @@
             <span class="link-arrow">Discover &rarr;</span>
           </div>
         </a>
-        <a href="#contact" class="collection-card reveal">
-          <div class="collection-visual pattern-cushion"></div>
+        <a href="#shop" data-shop-open="herbal" class="collection-card reveal">
+          <div class="collection-visual pattern-herbal"></div>
           <div class="collection-body">
-            <h3>Cushions &amp; Throws</h3>
-            <p>Handloom accents to layer texture into any room.</p>
-            <span class="link-arrow">Enquire &rarr;</span>
+            <h3>Herbal Products</h3>
+            <p>Naturally made preparations, from the same careful hands.</p>
+            <span class="link-arrow">Discover &rarr;</span>
           </div>
         </a>
       </div>
@@ -222,18 +210,47 @@
   <section id="shop" class="shop" hidden>
     <div class="container">
       <p class="eyebrow center">The Adorn Store</p>
-      <h2 class="section-title center">Shop Our Handloom Pieces</h2>
-      <p class="section-sub center">Handwoven pieces ready to ship from the loom. Every one is made to
-        order in small batches, so no two are ever identical.</p>
+      <h2 class="section-title center" id="shopHeading">Choose a Range</h2>
+      <p class="section-sub center" id="shopSub">Three things we make, each the slow way.
+        Pick one to see what is on the loom.</p>
 
-      <div class="shop-filters" id="shopFilters" role="group" aria-label="Filter products">
-        <button class="filter-chip is-active" data-filter="all">All Pieces</button>
-        <button class="filter-chip" data-filter="bedsheets">Bed Sheets</button>
-        <button class="filter-chip" data-filter="carpets">Carpets &amp; Rugs</button>
-        <button class="filter-chip" data-filter="cushions">Cushions &amp; Throws</button>
+      <!-- Step one: the three ranges -->
+      <div class="category-grid" id="categoryGrid">
+        <button class="category-tile" type="button" data-category="bedsheets">
+          <span class="category-visual pattern-bedsheet"></span>
+          <span class="category-body">
+            <span class="category-name">Bed Sheets</span>
+            <span class="category-desc">Handloom cotton sheets, quilts &amp; pillow covers.</span>
+            <span class="category-meta" data-count-for="bedsheets"></span>
+          </span>
+        </button>
+
+        <button class="category-tile" type="button" data-category="carpets">
+          <span class="category-visual pattern-carpet"></span>
+          <span class="category-body">
+            <span class="category-name">Carpets</span>
+            <span class="category-desc">Hand-knotted rugs and flat-woven durries.</span>
+            <span class="category-meta" data-count-for="carpets"></span>
+          </span>
+        </button>
+
+        <button class="category-tile" type="button" data-category="herbal">
+          <span class="category-visual pattern-herbal"></span>
+          <span class="category-body">
+            <span class="category-name">Herbal Products</span>
+            <span class="category-desc">Naturally made preparations from the same hands.</span>
+            <span class="category-meta" data-count-for="herbal"></span>
+          </span>
+        </button>
       </div>
 
-      <div class="shop-grid" id="shopGrid">
+      <!-- Step two: the pieces in the chosen range -->
+      <div class="shop-products" id="shopProducts" hidden>
+        <button class="back-to-categories" type="button" id="backToCategories">
+          &larr; All ranges
+        </button>
+
+        <div class="shop-grid" id="shopGrid">
 
         <article class="shop-card" data-category="bedsheets" data-id="onyx-bedsheet"
                  data-name="Onyx Black Bedsheet Set" data-price="4999" style="--i:0">
@@ -357,10 +374,18 @@
           </div>
         </article>
 
-      </div>
+        </div>
 
-      <p class="shop-note">Prices are inclusive of taxes. Free shipping across India on orders above
-        &#8377;5,000 &middot; Custom sizes available on request.</p>
+        <div class="shop-empty" id="shopEmpty" hidden>
+          <h3>Nothing listed here yet</h3>
+          <p>This range is still being put together. Tell us what you are after and we will let you
+            know the moment it is ready.</p>
+          <a href="#contact" class="btn btn-primary">Make an Enquiry</a>
+        </div>
+
+        <p class="shop-note" id="shopNote">Prices are inclusive of taxes. Free shipping across India
+          on orders above &#8377;5,000 &middot; Custom sizes available on request.</p>
+      </div>
     </div>
   </section>
 
