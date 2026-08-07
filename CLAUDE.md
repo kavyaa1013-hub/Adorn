@@ -25,10 +25,16 @@ data URIs. The live site itself still loads those fonts from Google Fonts normal
 ```
 index.html               All markup, single page
 css/style.css            Palette, type, layout, animation
-js/main.js               Intro animation, nav, reveals, shop, cart, forms
+js/main.js               Intro animation, reveals, shop, cart, forms
 assets/products/         Product photos (see the README in there)
 tools/build-preview.py   Bundles the preview
 ```
+
+The page is deliberately short: hero, feature strip, the two range sections, the shop, the craft
+story, newsletter, contact, footer. There is no nav — the first screen carries one call to action,
+Shop Now, and the header's copy of it stays hidden until the hero is scrolled past. A collections
+section and a testimonials block used to sit here; the first duplicated the range chooser exactly
+and the second was invented reviews. Don't reintroduce either.
 
 ## Palette and type
 
@@ -81,16 +87,19 @@ a range holds one or two pieces. So adding a product is a matter of editing `ind
 A `data-shop-open` trigger may name a range (`data-shop-open="carpets"`) to jump straight into it;
 without a value it opens the chooser.
 
-Copy elsewhere on the page is still placeholder marketing text the owner has not confirmed —
-the hero and story statistics, the testimonials, and the colour-swatch names in the Bed Sheets
-and Carpets sections.
+Carpets has no products, so the range shows its "Coming soon" state; adding a `.shop-card` with
+`data-category="carpets"` is all it takes to bring the grid back.
+
+The only invented copy left on the page is the four statistics in the craft story (25+ years,
+120+ artisans, 18 villages, 10k+ homes). The owner has not confirmed them.
 
 ## Visual work
 
 There are no product photos for most of the range, so visuals are drawn in CSS. Each range has
-its own set, and a card picks one by class: `.weave-1`–`8` for bed linen and `.rug-1`–`5` for
-carpets. `.pattern-*` covers the larger section grounds. Keep it that way rather than reaching
-for stock imagery.
+its own set, and a card picks one by class: `.weave-1`–`8` for bed linen. `.pattern-*` covers the
+larger section grounds. Keep it that way rather than reaching for stock imagery. The carpet set
+(`.rug-*`) was removed along with the carpet placeholders — real carpets will arrive with photos,
+as the Damas sets did.
 
 Build these from gradients that actually tile. `repeating-conic-gradient` and
 `repeating-radial-gradient` fan out from a single point, so they render as one wedge or one set of
