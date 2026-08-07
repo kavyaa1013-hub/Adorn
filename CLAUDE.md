@@ -32,14 +32,22 @@ tools/build-preview.py   Bundles the preview
 
 ## Palette and type
 
-Light grey ground (`--grey-light`, `#f2f3f5`) with a faint navy bias, alternating with a cooler,
-deeper `--pastel-blue` for banded sections; cards stay white so they lift off both. Dark navy
-`#1b2a4a` and gold `#cda449` from the logo carry the accents. Cormorant Garamond for headings,
-Jost for body. All tokens are custom properties at the top of `css/style.css` — change them there,
-not at call sites.
+Dark charcoal marble. The ground is `--marble` (`#2a2e34`), cool and faintly blue-biased, carrying
+low-contrast veining and a broad tonal drift so it reads as stone rather than flat paint;
+`--marble-alt` bands the alternating sections. Cards and panels sit on `--surface` / `--surface-2`,
+divided by `--line` / `--line-strong` rather than borders mixed by hand. Type is `--ink` on
+`--ink-soft`, and gold `#cda449` carries the accents — it glows against charcoal, so it needs less
+of it than the old pale palette did. Navy `#1b2a4a` still bands the feature strip, newsletter and
+footer, reading distinctly bluer than the marble. Cormorant Garamond for headings, Jost for body.
+All tokens are custom properties at the top of `css/style.css` — change them there, not at call
+sites.
 
-The grey is cool, so warm decorative fills read as yellow against it. Anything new should be
-mixed against `--grey-light` rather than borrowed from the old cream palette.
+Two traps this theme sets:
+
+- `--ink-soft` is a *light* grey. Any element that keeps a near-white ground (the `.tag` and
+  `.shop-status` pills, `.pm-close`) needs dark text — use `--navy` there, not `--ink-soft`.
+- Decorative grounds are pale strokes on a dark base. A fill mixed from the old cream palette
+  will glare; mix against `--surface` instead.
 
 ## Products
 
