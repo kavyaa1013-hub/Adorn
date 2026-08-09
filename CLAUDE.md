@@ -30,13 +30,23 @@ assets/products/         Product photos (see the README in there)
 tools/build-preview.py   Bundles the preview
 ```
 
-The landing screen is one screen: the wordmark, a line of copy and **Shop Now**. Nothing sits
-below it — there is no nav, no scroll, and `#contact` and the footer carry `hidden` until
-`openShop()` reveals them alongside the shop. Everything else that used to be on this page (a
-feature strip, two range detail sections, a craft story, a newsletter block, a collections grid
-and a testimonials block) has been removed at the owner's request. Don't reintroduce any of it.
+## Two pages, one file
 
-The whole site is therefore: landing → the two ranges → a range's products → enquiry form.
+`index.html` holds both pages and `main.js` swaps between them — the landing is not scrolled past,
+it comes off the document:
+
+- **Landing** (`#landing`) — the wordmark, a line of copy and **Shop Now**, and nothing else. No
+  nav, and measured scroll overflow is 0px. `#shop`, `#contact` and the footer all carry `hidden`.
+- **Shop** (`#shop`) — `showShop()` hides the landing, reveals the shop, contact form and footer,
+  and scrolls to the top. `showLanding()` reverses it, and the logo (`#homeLink`) calls it.
+
+Both push history, so Back and Forward move between the pages and `#shop` is a shareable link that
+opens straight into the store. The deep-link call sits at the very bottom of `main.js` on purpose:
+`showShop()` reaches into the range chooser's variables, which are declared further down the file.
+
+A feature strip, two range detail sections, a craft story, a newsletter block, a collections grid
+and a testimonials block used to live here. All removed at the owner's request — don't bring any
+of them back.
 
 ## Palette and type
 

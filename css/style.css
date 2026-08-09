@@ -106,16 +106,6 @@ ul{ list-style: none; margin:0; padding:0; }
 /* The hero carries a single call to action, so it gets to be bigger. */
 .btn-lg{ padding: 17px 44px; font-size: 1rem; letter-spacing: .1em; }
 
-/* The header's Shop Now would double up with the hero's, so it waits until the
-   hero has been scrolled past and then takes over. */
-.btn-shop{
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(-6px);
-  transition: opacity .35s var(--ease), transform .35s var(--ease), visibility .35s var(--ease);
-}
-.site-header.scrolled .btn-shop{ opacity: 1; visibility: visible; transform: translateY(0); }
-
 /* =========================================================
    INTRO ANIMATION
    ========================================================= */
@@ -442,6 +432,9 @@ section{ padding: 110px 0; }
 }
 
 .shop{
+  /* The shop is its own page, so it holds the screen; the contact form belongs
+     below the fold rather than peeking under the range chooser. */
+  min-height: 100vh;
   background:
     radial-gradient(circle at 15% 10%, rgba(205,164,73,.10), transparent 45%),
     linear-gradient(160deg, #2f333a, #292d33 55%, #24282d);
@@ -1126,7 +1119,6 @@ section{ padding: 110px 0; }
 
 @media (max-width: 760px){
   .header-actions{ gap: 12px; }
-  .btn-shop{ padding: 10px 20px; font-size: .74rem; }
   .shop-grid{ grid-template-columns: 1fr; }
   .category-grid{ grid-template-columns: 1fr; }
   .category-visual{ height: 140px; }

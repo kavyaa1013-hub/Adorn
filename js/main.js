@@ -89,17 +89,25 @@
   var shopSection = document.getElementById("shop");
   var shopGrid = document.getElementById("shopGrid");
 
-  /* A trigger may name a range to jump straight into; without one the shop
-     opens on the range chooser. */
-  function openShop(category) {
-    if (!shopSection) return;
-    var wasHidden = shopSection.hasAttribute("hidden");
-    shopSection.removeAttribute("hidden");
+  var landing = document.getElementById("landing");
+  var homeLink = document.getElementById("homeLink");
 
-    // The landing screen is the button and nothing else, so the form and footer
-    // stay out of the page until there is a reason to scroll.
+  function offPage(el, off) {
+    if (!el) return;
+    if (off) { el.setAttribute("hidden", ""); } else { el.removeAttribute("hidden"); }
+  }
+
+  /* The shop is a page in its own right, not a section under the landing: the
+     landing comes off the document entirely and the shop starts at the top of
+     the screen. */
+  function showShop(category, push) {
+    if (!shopSection) return;
+    var firstVisit = shopSection.hasAttribute("hidden");
+
+    offPage(landing, true);
+    offPage(shopSection, false);
     document.querySelectorAll("#contact, .site-footer").forEach(function (el) {
-      el.removeAttribute("hidden");
+      offPage(el, false);
     });
 
     if (category && CATEGORY_NAMES[category]) {
@@ -108,15 +116,12 @@
       showRanges();
     }
 
-    // Wait a frame so the newly shown section has a real offsetTop.
-    requestAnimationFrame(function () {
-      var top = shopSection.getBoundingClientRect().top + window.scrollY - 70;
-      window.scrollTo({ top: top, behavior: "smooth" });
-    });
+    window.scrollTo(0, 0);
+    if (push !== false && location.hash !== "#shop") {
+      history.pushState({ view: "shop" }, "", "#shop");
+    }
 
-    if (wasHidden) {
-      // Only stock that can actually be bought counts as ready to ship — the rest
-      // of the grid is slots marked "coming soon".
+    if (firstVisit) {
       var ready = shopGrid
         ? shopGrid.querySelectorAll(".shop-card:not([data-placeholder])").length
         : 0;
@@ -127,11 +132,36 @@
     }
   }
 
+  function showLanding(push) {
+    offPage(landing, false);
+    offPage(shopSection, true);
+    document.querySelectorAll("#contact, .site-footer").forEach(function (el) {
+      offPage(el, true);
+    });
+    hideToast();
+    window.scrollTo(0, 0);
+    if (push !== false && location.hash === "#shop") {
+      history.pushState({ view: "landing" }, "", location.pathname);
+    }
+  }
+
   document.querySelectorAll("[data-shop-open]").forEach(function (trigger) {
     trigger.addEventListener("click", function (e) {
       e.preventDefault();
-      openShop(trigger.getAttribute("data-shop-open"));
+      showShop(trigger.getAttribute("data-shop-open"));
     });
+  });
+
+  if (homeLink) {
+    homeLink.addEventListener("click", function (e) {
+      e.preventDefault();
+      showLanding();
+    });
+  }
+
+  // Back and forward move between the two pages rather than leaving the site.
+  window.addEventListener("popstate", function () {
+    if (location.hash === "#shop") { showShop(null, false); } else { showLanding(false); }
   });
 
   /* ---------- Product photos ----------
@@ -350,6 +380,10 @@
       showToast(removed + " removed from your bag.");
     }
     renderCart();
+
+  // A shared or reloaded #shop link lands on the shop, not the landing. Runs last,
+  // once the range chooser and cart are wired up.
+  if (location.hash === "#shop") showShop(null, false);
   }
 
   function bumpCount() {
