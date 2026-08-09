@@ -76,13 +76,13 @@ data attributes: `data-id`, `data-name`, `data-price` (integer rupees), `data-ca
 pattern underneath shows instead — never a broken image.
 
 The **Onyx Black Bedsheet Set** is the only product with a confirmed price, so it is the only
-one that can go in the bag. The four **Damas** colourways are real and photographed but priced
-`data-placeholder` until the owner supplies figures — they show "Price on request" and route to
-the enquiry form, and carry no "Coming soon" pill since they are not forthcoming, just unpriced.
-Their photos are supplier catalogue shots still carrying another company's branding; see
-`assets/products/README.md`.
+one that can go in the bag. The four **Damas** colourways and five **Satin** colourways are real
+and photographed but priced `data-placeholder` until the owner supplies figures — they show
+"Price on request" and route to the enquiry form, and carry no "Coming soon" pill since they are
+not forthcoming, just unpriced. The Damas photos are supplier catalogue shots still carrying
+another company's branding; the Satin ones are clean. See `assets/products/README.md`.
 
-Otherwise: The other cards are slots the
+The remaining cards are slots the
 owner asked for, marked `data-placeholder`: they carry no price, show "Coming soon" and "Price on
 request", and route to the enquiry form instead of the cart. Turn one into a real product by
 filling in `data-name`/`data-price`, dropping a photo at `assets/products/<data-id>.jpg`, swapping

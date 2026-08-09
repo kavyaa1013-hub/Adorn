@@ -14,16 +14,16 @@ The filename must match the product's `data-id` in `index.html`, with a `.jpg` e
 | Damas Bedsheet Set — Ivory  | `damas-ivory.jpg` ✅       |
 | Damas Bedsheet Set — Mocha  | `damas-mocha.jpg` ✅       |
 | Damas Bedsheet Set — Khaki  | `damas-khaki.jpg` ✅       |
+| Satin Set — Pearl White     | `satin-pearl.jpg` ✅       |
+| Satin Set — Sky Blue        | `satin-sky.jpg` ✅         |
+| Satin Set — Terracotta      | `satin-terracotta.jpg` ✅  |
+| Satin Set — Emerald         | `satin-emerald.jpg` ✅     |
+| Satin Set — Champagne       | `satin-champagne.jpg` ✅   |
 | Handloom Bedsheet Design 02 | `bedsheet-02.jpg`         |
 | Handloom Bedsheet Design 03 | `bedsheet-03.jpg`         |
 | Handloom Bedsheet Design 04 | `bedsheet-04.jpg`         |
 | Handloom Bedsheet Design 05 | `bedsheet-05.jpg`         |
 | Handloom Bedsheet Design 06 | `bedsheet-06.jpg`         |
-| Handloom Carpet Design 01   | `carpet-01.jpg`           |
-| Handloom Carpet Design 02   | `carpet-02.jpg`           |
-| Handloom Carpet Design 03   | `carpet-03.jpg`           |
-| Handloom Carpet Design 04   | `carpet-04.jpg`           |
-| Handloom Carpet Design 05   | `carpet-05.jpg`           |
 
 ## Sizing
 
@@ -54,6 +54,9 @@ onyx-bedsheet-4.jpg   fabric close-up
 The four Damas images are supplier catalogue shots and carry another company's
 branding — an "mj Home" logo top-left and a "DAMAS CO." colour label top-right. They are
 stored unaltered. Replace them with clean images before the site goes live.
+
+The five Satin images are clean: the packaging in shot reads only "Bedding / Satin Collection",
+with no third-party mark.
 
 ## If a photo is missing
 
