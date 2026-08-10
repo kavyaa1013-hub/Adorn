@@ -75,21 +75,20 @@ data attributes: `data-id`, `data-name`, `data-price` (integer rupees), `data-ca
 `assets/products/<data-id>.jpg`. A missing photo is removed by `main.js` and the CSS weave
 pattern underneath shows instead — never a broken image.
 
-The **Onyx Black Bedsheet Set** is the only product with a confirmed price, so it is the only
-one that can go in the bag. The four **Damas** colourways and five **Satin** colourways are real
-and photographed but priced `data-placeholder` until the owner supplies figures — they show
-"Price on request" and route to the enquiry form, and carry no "Coming soon" pill since they are
-not forthcoming, just unpriced. The Damas photos are supplier catalogue shots still carrying
-another company's branding; the Satin ones are clean. See `assets/products/README.md`.
+**Every price on the site is the same placeholder, ₹4,999.** The owner asked for one common
+price rather than an enquiry route, and that figure is their own confirmed price for the Onyx set
+reused across the range. It is not a real price for the other nine — replace `data-price` per
+product as soon as the real figures arrive.
 
-The remaining cards are slots the
-owner asked for, marked `data-placeholder`: they carry no price, show "Coming soon" and "Price on
-request", and route to the enquiry form instead of the cart. Turn one into a real product by
-filling in `data-name`/`data-price`, dropping a photo at `assets/products/<data-id>.jpg`, swapping
-the Enquire button for `<button class="btn-cart" data-add>Add to Bag</button>`, and deleting the
-`data-placeholder` attribute.
+A card may carry `data-specs`, a `|`-separated list shown as bullets in the quick view. Only the
+Pearl White has them so far, taken off the supplier's spec sheet; cards without the attribute show
+no bullet list. Do not put a blanket list back in the markup — the previous one claimed "natural
+fibres, no synthetic blends" of a range that is mostly **polysatin**, which is polyester. The hero,
+page description, category blurb, footer and quick-view note were all corrected for the same
+reason. Adorn sells handloom cotton *and* satin; copy must not claim otherwise.
 
-Never invent a price, and never give a placeholder one — ask the owner.
+The `data-placeholder` machinery (no price, "Coming soon" pill, Enquire routing to the contact
+form) still works and is documented here, but nothing currently uses it.
 
 The shop opens on a chooser of two ranges — Bed Sheets and Carpets — and picking
 one swaps in just that range's cards. `main.js` derives everything from the cards themselves: each

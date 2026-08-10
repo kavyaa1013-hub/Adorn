@@ -489,6 +489,7 @@
   var pmPrice = document.getElementById("pmPrice");
   var pmQty = document.getElementById("pmQty");
   var pmQtyRow = document.getElementById("pmQtyRow");
+  var pmPoints = document.getElementById("pmPoints");
   var pmMinus = document.getElementById("pmMinus");
   var pmPlus = document.getElementById("pmPlus");
   var pmAdd = document.getElementById("pmAdd");
@@ -584,6 +585,19 @@
     pmPrice.classList.toggle("is-tbc", isPlaceholder);
     if (pmQtyRow) pmQtyRow.hidden = isPlaceholder;
     pmAdd.textContent = isPlaceholder ? "Enquire About This Piece" : "Add to Bag";
+
+    // Specs come from the product itself; a blanket list would end up claiming
+    // things that are not true of every piece in the range.
+    if (pmPoints) {
+      var specs = (card.dataset.specs || "").split("|").filter(Boolean);
+      pmPoints.textContent = "";
+      specs.forEach(function (spec) {
+        var li = document.createElement("li");
+        li.textContent = spec;
+        pmPoints.appendChild(li);
+      });
+      pmPoints.hidden = specs.length === 0;
+    }
 
     buildModalMedia(card);
     setQty(1);

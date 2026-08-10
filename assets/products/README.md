@@ -14,16 +14,11 @@ The filename must match the product's `data-id` in `index.html`, with a `.jpg` e
 | Damas Bedsheet Set — Ivory  | `damas-ivory.jpg` ✅       |
 | Damas Bedsheet Set — Mocha  | `damas-mocha.jpg` ✅       |
 | Damas Bedsheet Set — Khaki  | `damas-khaki.jpg` ✅       |
-| Satin Set — Pearl White     | `satin-pearl.jpg` ✅       |
+| Satin Set — Pearl White     | `satin-pearl.jpg` ✅ +5    |
 | Satin Set — Sky Blue        | `satin-sky.jpg` ✅         |
 | Satin Set — Terracotta      | `satin-terracotta.jpg` ✅  |
 | Satin Set — Emerald         | `satin-emerald.jpg` ✅     |
 | Satin Set — Champagne       | `satin-champagne.jpg` ✅   |
-| Handloom Bedsheet Design 02 | `bedsheet-02.jpg`         |
-| Handloom Bedsheet Design 03 | `bedsheet-03.jpg`         |
-| Handloom Bedsheet Design 04 | `bedsheet-04.jpg`         |
-| Handloom Bedsheet Design 05 | `bedsheet-05.jpg`         |
-| Handloom Bedsheet Design 06 | `bedsheet-06.jpg`         |
 
 ## Sizing
 
@@ -47,7 +42,18 @@ onyx-bedsheet.jpg     main image — made-up bed
 onyx-bedsheet-2.jpg   styled angle
 onyx-bedsheet-3.jpg   flat sheet and pillows
 onyx-bedsheet-4.jpg   fabric close-up
+
+satin-pearl.jpg       main image — folded set
+satin-pearl-2.jpg     made up on a bed
+satin-pearl-3.jpg     styled angle
+satin-pearl-4.jpg     fabric detail sheet
+satin-pearl-5.jpg     sizes and contents sheet
+satin-pearl-6.jpg     pillow cover sheet
 ```
+
+The last three of those are the supplier's spec sheets. They are worth showing — customers
+do read them — but they are also the source of the Pearl White `data-specs`, so if the
+supplier revises a sheet, update both.
 
 ## A note on the Damas photos
 
