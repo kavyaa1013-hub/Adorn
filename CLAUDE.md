@@ -35,14 +35,23 @@ tools/build-preview.py   Bundles the preview
 UPI, no gateway and no server. The customer pays from their own UPI app and sends the order
 through with the reference; the owner matches it by hand before dispatch.
 
-**Set `ADORN_PAYMENT` at the top of `js/main.js`** — `upiId`, `whatsapp` (country code, no `+`)
-and `orderEmail`. Until `upiId` is filled in, the checkout says payment is not set up rather than
-showing a placeholder someone might actually pay; that guard is deliberate, do not swap it for a
-dummy UPI ID. `assets/upi-qr.png` is shown if present and silently dropped if not, the same way
-product photos work.
+`ADORN_PAYMENT` at the top of `js/main.js` holds the real details: UPI `6239073929-2@axl`,
+WhatsApp `917082524499`, orders to `adorn.2026@gmail.com`. The panel is rendered from
+`window.ADORN_PAYMENT` at render time, not captured at load.
 
-The panel is rendered from `window.ADORN_PAYMENT` at render time, not captured at load, so the
-details can be filled in without touching anything else.
+The guard around it stays: if `upiId` is ever emptied, the checkout says payment is not set up
+rather than showing a placeholder someone might actually pay. Do not swap that for a dummy UPI ID.
+
+`assets/upi-qr.png` is the owner's PhonePe QR, cropped only — never recolour or regenerate a
+payment QR. It is white-on-black as PhonePe produced it, so `.pay-qr` gives it a dark frame rather
+than the usual white one. `tools/build-preview.py` folds it into the preview from the *script*,
+since the path lives in `main.js` rather than the markup.
+
+**Bank transfer is deliberately off.** The owner sent a cancelled cheque, so the account number
+and IFSC are known, but publishing an account number on a public page is their decision to make,
+not a default. `ADORN_PAYMENT.bank` is empty and the panel omits the section entirely; filling in
+those three fields turns it on. The cheque image itself is not in this repo and must not be —
+it carries a signature and full account details.
 
 ## Three pages, one file
 
@@ -124,8 +133,9 @@ without a value it opens the chooser.
 Carpets has no products, so the range shows its "Coming soon" state; adding a `.shop-card` with
 `data-category="carpets"` is all it takes to bring the grid back.
 
-The only invented copy left on the page is the four statistics in the craft story (25+ years,
-120+ artisans, 18 villages, 10k+ homes). The owner has not confirmed them.
+Contact details are the owner's real ones: Barsat Road, Noorwala, Panipat, Haryana 132103,
+`adorn.2026@gmail.com`, +91 70825 24499. No invented contact information remains, and the social
+row was removed rather than left pointing at `#`.
 
 ## Visual work
 

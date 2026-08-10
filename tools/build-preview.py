@@ -65,6 +65,20 @@ def build():
         if tag in body:
             raise SystemExit("preview markup must not contain %s — the host supplies it" % tag)
 
+    # The checkout builds the UPI QR from JavaScript, so its path is in the script
+    # rather than the markup — it has to be folded in there or the preview shows no QR.
+    qr = os.path.join(ROOT, "assets", "upi-qr.png")
+    if "assets/upi-qr.png" in js:
+        if os.path.exists(qr):
+            with open(qr, "rb") as fh:
+                js = js.replace(
+                    "assets/upi-qr.png",
+                    "data:image/png;base64," + base64.b64encode(fh.read()).decode(),
+                )
+            inlined += 1
+        else:
+            print("note: no assets/upi-qr.png — the checkout will show no QR")
+
     page = "<title>%s</title>\n<style>\n%s\n%s\n</style>\n%s\n<script>\n%s\n</script>\n" % (
         TITLE, fonts, css, body, js
     )

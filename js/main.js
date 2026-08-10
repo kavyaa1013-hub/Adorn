@@ -6,12 +6,14 @@
    rather than showing a customer somewhere wrong to send money.
    ========================================================= */
 var ADORN_PAYMENT = {
-  upiId: "",                 // e.g. "adornhandloom@okhdfcbank"
-  payeeName: "Adorn Handloom",
-  whatsapp: "",              // country code, no +, e.g. "919876543210"
-  orderEmail: "",            // where email orders go, e.g. "hello@adornhandloom.com"
+  upiId: "6239073929-2@axl",
+  payeeName: "Adorn",
+  whatsapp: "917082524499",
+  orderEmail: "adorn.2026@gmail.com",
+  // Bank transfer is deliberately off. The owner's account details exist but
+  // publishing an account number on a public page is their call, not a default.
   bank: {
-    name: "",                // account holder
+    name: "",
     account: "",
     ifsc: ""
   }
