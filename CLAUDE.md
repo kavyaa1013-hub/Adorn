@@ -30,19 +30,42 @@ assets/products/         Product photos (see the README in there)
 tools/build-preview.py   Bundles the preview
 ```
 
-## Two pages, one file
+## Payment
 
-`index.html` holds both pages and `main.js` swaps between them — the landing is not scrolled past,
-it comes off the document:
+UPI, no gateway and no server. The customer pays from their own UPI app and sends the order
+through with the reference; the owner matches it by hand before dispatch.
+
+**Set `ADORN_PAYMENT` at the top of `js/main.js`** — `upiId`, `whatsapp` (country code, no `+`)
+and `orderEmail`. Until `upiId` is filled in, the checkout says payment is not set up rather than
+showing a placeholder someone might actually pay; that guard is deliberate, do not swap it for a
+dummy UPI ID. `assets/upi-qr.png` is shown if present and silently dropped if not, the same way
+product photos work.
+
+The panel is rendered from `window.ADORN_PAYMENT` at render time, not captured at load, so the
+details can be filled in without touching anything else.
+
+## Three pages, one file
+
+`index.html` holds all three and `main.js` swaps between them — nothing is scrolled past, each
+view comes off the document:
 
 - **Landing** (`#landing`) — the wordmark, a line of copy and **Shop Now**, and nothing else. No
   nav, and measured scroll overflow is 0px. `#shop`, `#contact` and the footer all carry `hidden`.
 - **Shop** (`#shop`) — `showShop()` hides the landing, reveals the shop, contact form and footer,
   and scrolls to the top. `showLanding()` reverses it, and the logo (`#homeLink`) calls it.
+- **Checkout** (`#checkout`) — `showCheckout()`, reached from the bag. Delivery details, the order
+  summary and the UPI panel. Validates name, 10-digit phone, email, address, 6-digit PIN and the
+  UPI reference, then hands the whole order to WhatsApp (or email) prefilled.
 
-Both push history, so Back and Forward move between the pages and `#shop` is a shareable link that
-opens straight into the store. The deep-link call sits at the very bottom of `main.js` on purpose:
-`showShop()` reaches into the range chooser's variables, which are declared further down the file.
+All three push history, so Back and Forward move between them and `#shop` is a shareable link that
+opens straight into the store. A fresh load on `#checkout` goes to the shop instead — the bag does
+not survive a refresh, so there would be nothing to pay for.
+
+The deep-link call is the last statement in `main.js`, immediately before the closing `})()`, and
+it has to stay there: `showShop()` reaches into the range chooser and the cart, both declared
+further down the file. It has twice been inserted after the first `renderCart();` in the file by a
+careless search-and-replace, which lands it *inside* `changeQty()` where it never runs. Watch for
+that — `renderCart();` appears three times.
 
 A feature strip, two range detail sections, a craft story, a newsletter block, a collections grid
 and a testimonials block used to live here. All removed at the owner's request — don't bring any

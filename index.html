@@ -330,6 +330,85 @@
     </div>
   </section>
 
+
+  <!-- ===== CHECKOUT ===== -->
+  <section id="checkout" class="checkout" hidden>
+    <div class="container">
+      <button class="back-to-categories" type="button" id="backToShop">&larr; Back to the shop</button>
+
+      <p class="eyebrow center">Checkout</p>
+      <h2 class="section-title center">Complete Your Order</h2>
+
+      <div class="checkout-layout">
+
+        <form class="checkout-form" id="checkoutForm" novalidate>
+          <h3>Where should it go?</h3>
+
+          <label>Full name
+            <input type="text" name="name" autocomplete="name" required>
+          </label>
+
+          <div class="form-row">
+            <label>Phone
+              <input type="tel" name="phone" inputmode="numeric" autocomplete="tel"
+                     placeholder="10-digit mobile" required>
+            </label>
+            <label>Email
+              <input type="email" name="email" autocomplete="email" required>
+            </label>
+          </div>
+
+          <label>Delivery address
+            <textarea name="address" rows="3" autocomplete="street-address"
+                      placeholder="House / flat, street, landmark" required></textarea>
+          </label>
+
+          <div class="form-row form-row-3">
+            <label>City
+              <input type="text" name="city" autocomplete="address-level2" required>
+            </label>
+            <label>State
+              <input type="text" name="state" autocomplete="address-level1" required>
+            </label>
+            <label>PIN code
+              <input type="text" name="pin" inputmode="numeric" maxlength="6"
+                     autocomplete="postal-code" required>
+            </label>
+          </div>
+
+          <h3 class="pay-heading">Pay by UPI</h3>
+          <div id="payPanel"></div>
+
+          <label>UPI reference number
+            <input type="text" name="reference" placeholder="12-digit number from your UPI app" required>
+            <span class="field-hint">Your UPI app shows this after paying. It lets us match your
+              payment to this order.</span>
+          </label>
+
+          <button type="submit" class="btn btn-primary checkout-send" id="checkoutSend">
+            Send Order on WhatsApp
+          </button>
+          <p class="checkout-alt">
+            No WhatsApp? <a href="#" id="checkoutEmail">Send it by email instead</a>
+          </p>
+          <p class="form-note" id="checkoutNote" role="status"></p>
+        </form>
+
+        <aside class="order-summary">
+          <h3>Your order</h3>
+          <div id="orderLines"></div>
+          <div class="order-total">
+            <span>Total</span>
+            <strong id="orderTotal">&#8377;0</strong>
+          </div>
+          <p class="order-note">Free shipping across India on orders above &#8377;5,000.
+            Nothing is dispatched until we have confirmed your payment.</p>
+        </aside>
+
+      </div>
+    </div>
+  </section>
+
   <!-- ===== CONTACT ===== -->
   <section id="contact" class="contact alt-bg" hidden>
     <div class="container contact-layout">
@@ -446,8 +525,8 @@
   <div class="cart-body" id="cartBody"></div>
   <footer class="cart-foot">
     <div class="cart-total"><span>Total</span><strong id="cartTotal">&#8377;0</strong></div>
-    <button class="btn btn-primary cart-checkout" id="cartCheckout">Request This Order</button>
-    <p class="cart-note">We confirm every order by email &mdash; our team replies within one business day.</p>
+    <button class="btn btn-primary cart-checkout" id="cartCheckout">Checkout</button>
+    <p class="cart-note">Pay by UPI at checkout. We confirm every order before dispatch.</p>
   </footer>
 </aside>
 

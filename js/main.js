@@ -1,4 +1,22 @@
 /* Adorn — main.js */
+
+/* =========================================================
+   PAYMENT DETAILS — replace before taking real orders.
+   Leave a value as "" and the checkout will say payment is not set up yet
+   rather than showing a customer somewhere wrong to send money.
+   ========================================================= */
+var ADORN_PAYMENT = {
+  upiId: "",                 // e.g. "adornhandloom@okhdfcbank"
+  payeeName: "Adorn Handloom",
+  whatsapp: "",              // country code, no +, e.g. "919876543210"
+  orderEmail: "",            // where email orders go, e.g. "hello@adornhandloom.com"
+  bank: {
+    name: "",                // account holder
+    account: "",
+    ifsc: ""
+  }
+};
+
 (function () {
   "use strict";
 
@@ -104,6 +122,7 @@
     if (!shopSection) return;
     var firstVisit = shopSection.hasAttribute("hidden");
 
+    offPage(document.getElementById("checkout"), true);
     offPage(landing, true);
     offPage(shopSection, false);
     document.querySelectorAll("#contact, .site-footer").forEach(function (el) {
@@ -135,6 +154,7 @@
   function showLanding(push) {
     offPage(landing, false);
     offPage(shopSection, true);
+    offPage(document.getElementById("checkout"), true);
     document.querySelectorAll("#contact, .site-footer").forEach(function (el) {
       offPage(el, true);
     });
@@ -161,7 +181,9 @@
 
   // Back and forward move between the two pages rather than leaving the site.
   window.addEventListener("popstate", function () {
-    if (location.hash === "#shop") { showShop(null, false); } else { showLanding(false); }
+    if (location.hash === "#checkout") { showCheckout(false); }
+    else if (location.hash === "#shop") { showShop(null, false); }
+    else { showLanding(false); }
   });
 
   /* ---------- Product photos ----------
@@ -381,9 +403,6 @@
     }
     renderCart();
 
-  // A shared or reloaded #shop link lands on the shop, not the landing. Runs last,
-  // once the range chooser and cart are wired up.
-  if (location.hash === "#shop") showShop(null, false);
   }
 
   function bumpCount() {
@@ -692,29 +711,227 @@
     setDrawer(false);
   });
 
-  /* Checkout hands off to the contact form — there is no payment backend. */
+  renderCart();
+
+  /* ---------- Checkout ----------
+     UPI, no gateway and no server: the customer pays from their own app and
+     sends the order through with the reference, which we match by hand. */
+  var checkoutSection = document.getElementById("checkout");
+  var checkoutForm = document.getElementById("checkoutForm");
+  var checkoutNote = document.getElementById("checkoutNote");
+  var checkoutEmail = document.getElementById("checkoutEmail");
+  var backToShop = document.getElementById("backToShop");
+  var orderLines = document.getElementById("orderLines");
+  var orderTotal = document.getElementById("orderTotal");
+  var payPanel = document.getElementById("payPanel");
+
+  function payment() { return window.ADORN_PAYMENT || {}; }
+
+  function bagTotal() {
+    return Object.keys(cart).reduce(function (sum, id) {
+      return sum + cart[id].qty * cart[id].price;
+    }, 0);
+  }
+
+  function renderOrder() {
+    if (!orderLines) return;
+    orderLines.textContent = "";
+    Object.keys(cart).forEach(function (id) {
+      var item = cart[id];
+      var row = document.createElement("div");
+      row.className = "order-line";
+      var left = document.createElement("span");
+      left.textContent = item.name + " × " + item.qty;
+      var right = document.createElement("span");
+      right.textContent = rupees(item.qty * item.price);
+      row.appendChild(left);
+      row.appendChild(right);
+      orderLines.appendChild(row);
+    });
+    if (orderTotal) orderTotal.textContent = rupees(bagTotal());
+    renderPayPanel();
+  }
+
+  function renderPayPanel() {
+    if (!payPanel) return;
+    payPanel.textContent = "";
+    var total = bagTotal();
+
+    var PAY = payment();
+    if (!PAY.upiId) {
+      // Better to say nothing is set up than to show a placeholder someone might pay.
+      var warn = document.createElement("p");
+      warn.className = "pay-unset";
+      warn.textContent =
+        "Online payment is not set up yet. Fill in ADORN_PAYMENT at the top of " +
+        "js/main.js with your UPI ID and WhatsApp number, and this panel will show " +
+        "your payment details here.";
+      payPanel.appendChild(warn);
+      return;
+    }
+
+    var amount = document.createElement("p");
+    amount.className = "pay-amount";
+    amount.innerHTML = "Pay <strong>" + rupees(total) + "</strong> to";
+    payPanel.appendChild(amount);
+
+    var idRow = document.createElement("div");
+    idRow.className = "pay-id";
+    var idText = document.createElement("code");
+    idText.textContent = PAY.upiId;
+    var copy = document.createElement("button");
+    copy.type = "button";
+    copy.className = "pay-copy";
+    copy.textContent = "Copy";
+    copy.addEventListener("click", function () {
+      navigator.clipboard.writeText(PAY.upiId).then(function () {
+        copy.textContent = "Copied ✓";
+        setTimeout(function () { copy.textContent = "Copy"; }, 1600);
+      });
+    });
+    idRow.appendChild(idText);
+    idRow.appendChild(copy);
+    payPanel.appendChild(idRow);
+
+    // On a phone this opens the UPI app with the amount already filled in.
+    var link = document.createElement("a");
+    link.className = "btn btn-primary pay-open";
+    link.href = "upi://pay?pa=" + encodeURIComponent(PAY.upiId) +
+      "&pn=" + encodeURIComponent(PAY.payeeName || "Adorn") +
+      "&am=" + total + "&cu=INR" +
+      "&tn=" + encodeURIComponent("Adorn order");
+    link.textContent = "Open UPI App";
+    payPanel.appendChild(link);
+
+    // A QR the owner drops in themselves; removed if the file is not there.
+    var qr = document.createElement("img");
+    qr.className = "pay-qr";
+    qr.src = "assets/upi-qr.png";
+    qr.alt = "UPI QR code for " + (PAY.payeeName || "Adorn");
+    qr.loading = "lazy";
+    qr.addEventListener("error", function () { qr.remove(); });
+    payPanel.appendChild(qr);
+
+    if (PAY.bank && PAY.bank.account) {
+      var bank = document.createElement("p");
+      bank.className = "pay-bank";
+      bank.textContent = "Bank transfer: " + PAY.bank.name + " · A/C " +
+        PAY.bank.account + " · IFSC " + PAY.bank.ifsc;
+      payPanel.appendChild(bank);
+    }
+  }
+
+  function orderMessage(f) {
+    var lines = ["NEW ORDER — Adorn", ""];
+    Object.keys(cart).forEach(function (id) {
+      lines.push("• " + cart[id].name + " × " + cart[id].qty +
+                 " — " + rupees(cart[id].qty * cart[id].price));
+    });
+    lines.push("Total: " + rupees(bagTotal()), "");
+    lines.push("DELIVER TO");
+    lines.push(f.name + " · " + f.phone);
+    lines.push(f.email);
+    lines.push(f.address);
+    lines.push(f.city + ", " + f.state + " — " + f.pin, "");
+    lines.push("PAYMENT");
+    var PAY = payment();
+    lines.push("Paid by UPI" + (PAY.upiId ? " to " + PAY.upiId : ""));
+    lines.push("Reference: " + f.reference);
+    return lines.join("\n");
+  }
+
+  function readForm() {
+    var data = {};
+    ["name", "phone", "email", "address", "city", "state", "pin", "reference"]
+      .forEach(function (key) {
+        var field = checkoutForm.elements[key];
+        data[key] = field ? field.value.trim() : "";
+      });
+    return data;
+  }
+
+  function validate(f) {
+    if (!Object.keys(cart).length) return "Your bag is empty.";
+    if (!f.name) return "Please add your name.";
+    if (!/^[0-9]{10}$/.test(f.phone.replace(/\D/g, ""))) return "Please enter a 10-digit mobile number.";
+    if (!/^\S+@\S+\.\S+$/.test(f.email)) return "Please enter a valid email address.";
+    if (!f.address) return "Please add a delivery address.";
+    if (!f.city || !f.state) return "Please add your city and state.";
+    if (!/^[0-9]{6}$/.test(f.pin)) return "Please enter a 6-digit PIN code.";
+    if (!f.reference) return "Please add the UPI reference from your payment.";
+    return "";
+  }
+
+  function showCheckout(push) {
+    if (!checkoutSection) return;
+    offPage(landing, true);
+    offPage(shopSection, true);
+    offPage(checkoutSection, false);
+    document.querySelectorAll("#contact, .site-footer").forEach(function (el) {
+      offPage(el, true);
+    });
+    renderOrder();
+    window.scrollTo(0, 0);
+    if (push !== false && location.hash !== "#checkout") {
+      history.pushState({ view: "checkout" }, "", "#checkout");
+    }
+  }
+
   if (cartCheckout) {
     cartCheckout.addEventListener("click", function () {
-      var lines = Object.keys(cart).map(function (id) {
-        return "• " + cart[id].name + " × " + cart[id].qty;
-      });
-      if (!lines.length) return;
-
-      var messageField = document.querySelector("#contactForm [name=message]");
-      var subjectField = document.querySelector("#contactForm [name=subject]");
-      if (messageField) {
-        messageField.value = "I'd like to order:\n" + lines.join("\n") + "\n\nTotal: " +
-          (cartTotal ? cartTotal.textContent : "");
-      }
-      if (subjectField) subjectField.value = "General Enquiry";
-
       setDrawer(false);
-      document.getElementById("contact").scrollIntoView({ behavior: "smooth" });
-      showToast("Your order has been added to the enquiry form below.");
+      showCheckout();
+    });
+  }
+  if (backToShop) {
+    backToShop.addEventListener("click", function () {
+      offPage(checkoutSection, true);
+      showShop(null);
     });
   }
 
-  renderCart();
+  function submitOrder(via) {
+    var f = readForm();
+    var problem = validate(f);
+    if (problem) {
+      if (checkoutNote) checkoutNote.textContent = problem;
+      return;
+    }
+    var body = orderMessage(f);
+    var PAY = payment();
+    if (via === "email") {
+      var to = PAY.orderEmail || "";
+      window.location.href = "mailto:" + to +
+        "?subject=" + encodeURIComponent("New Adorn order — " + f.name) +
+        "&body=" + encodeURIComponent(body);
+    } else {
+      if (!PAY.whatsapp) {
+        if (checkoutNote) {
+          checkoutNote.textContent =
+            "WhatsApp is not set up yet — add your number to ADORN_PAYMENT in js/main.js.";
+        }
+        return;
+      }
+      window.open("https://wa.me/" + PAY.whatsapp + "?text=" + encodeURIComponent(body), "_blank");
+    }
+    if (checkoutNote) {
+      checkoutNote.textContent =
+        "Thank you. Send the message that just opened and we will confirm your order.";
+    }
+  }
+
+  if (checkoutForm) {
+    checkoutForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      submitOrder("whatsapp");
+    });
+  }
+  if (checkoutEmail) {
+    checkoutEmail.addEventListener("click", function (e) {
+      e.preventDefault();
+      submitOrder("email");
+    });
+  }
 
   /* ---------- Forms (front-end only demo handling) ---------- */
   var contactForm = document.getElementById("contactForm");
@@ -744,4 +961,11 @@
   /* ---------- Footer year ---------- */
   var yearEl = document.getElementById("year");
   if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+  // A shared or reloaded #shop link lands on the shop, not the landing. Runs last,
+  // once the range chooser and cart are wired up. A reloaded #checkout goes to the
+  // shop instead — the bag does not survive a refresh, so there is nothing to pay for.
+  if (location.hash === "#shop" || location.hash === "#checkout") {
+    showShop(null, location.hash === "#shop" ? false : undefined);
+  }
 })();
