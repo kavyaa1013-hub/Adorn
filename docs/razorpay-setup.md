@@ -1,5 +1,10 @@
 # Turning on card payments with Razorpay
 
+> **The card option is currently removed from the site.** It could not be made to work
+> safely without a gateway account, so the checkout is UPI only. The two functions in
+> `api/` and the steps below are kept ready — nothing on the live site calls them. When
+> the Razorpay account is active, wiring the card option back in is about ten minutes.
+
 The code is written and tested. What is left needs your business identity, so only you
 can do it. Two routes below — start with the quick one if you want cards working this
 week, move to the proper one when you have a spare hour.

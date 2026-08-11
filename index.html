@@ -366,20 +366,13 @@
             </label>
           </div>
 
-          <h3 class="pay-heading">Payment</h3>
-
-          <div class="pay-methods" id="payMethods" role="group" aria-label="Payment method">
-            <button type="button" class="pay-method is-active" data-method="upi">UPI</button>
-            <button type="button" class="pay-method" data-method="card">Debit / Credit Card</button>
-          </div>
-
+          <h3 class="pay-heading">Pay by UPI</h3>
           <div id="payPanel"></div>
 
-          <label><span id="referenceLabel">UPI reference number</span>
-            <input type="text" name="reference" id="referenceInput"
-                   placeholder="12-digit number from your UPI app" required>
-            <span class="field-hint" id="referenceHint">Your UPI app shows this after paying.
-              It lets us match your payment to this order.</span>
+          <label>UPI reference number
+            <input type="text" name="reference" placeholder="12-digit number from your UPI app" required>
+            <span class="field-hint">Your UPI app shows this after paying. It lets us match your
+              payment to this order.</span>
           </label>
 
           <button type="submit" class="btn btn-primary checkout-send" id="checkoutSend">
