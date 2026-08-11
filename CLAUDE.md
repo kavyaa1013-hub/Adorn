@@ -28,7 +28,22 @@ css/style.css            Palette, type, layout, animation
 js/main.js               Intro animation, reveals, shop, cart, forms
 assets/products/         Product photos (see the README in there)
 tools/build-preview.py   Bundles the preview
+tools/build-release.py   Packages the site as a zip for a web host
+tools/release-readme.txt Ships inside that zip as README.txt
 ```
+
+## Handing the owner the files
+
+`python3 tools/build-release.py` writes `dist/adorn-website.zip` — `index.html`, the stylesheet,
+the script, the photos and the UPI QR, plus `tools/release-readme.txt` as `README.txt`. Nothing
+else: `api/`, `docs/` and `tools/` are repo scaffolding and would only invite someone to upload a
+serverless function to a host that cannot run it.
+
+The script fails the build if the markup or script references an asset that would not be in the
+zip, so a download can never ship half a site. That check matches paths ending in a file
+extension — matching a bare `assets/` prefix flagged prose in the comments as a broken link.
+
+`dist/` is gitignored. Build the zip when it is asked for; don't commit it.
 
 ## Payment
 

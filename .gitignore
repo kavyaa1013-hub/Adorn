@@ -10,3 +10,6 @@ preview/
 .env
 .env.*
 !.env.example
+
+# Release zips are built on demand, not committed.
+dist/

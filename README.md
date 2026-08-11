@@ -1,66 +1,79 @@
-# Adorn — Handloom Bed Sheets &amp; Carpets
+# Adorn — Handloom Bed Sheets
 
-A static marketing website for **Adorn**, a handloom business selling bed sheets, carpets and home
-textiles.
+A static marketing site and shop for **Adorn**, a handloom business in Panipat, Haryana selling
+bed sheet sets in handloom cotton and premium satin.
 
-## Highlights
+Plain HTML, CSS and JavaScript. No build step, no framework, no package manager — open
+`index.html` and it runs.
 
-- **Brand intro animation** — on first load, the "Adorn" wordmark animates in over a soft pastel
-  background before revealing the site (auto-dismisses after ~2.6s, or on click/keypress).
-- **Palette** — white / pastel ivory &amp; blue backgrounds with dark navy blue and gold accents,
-  matched to the brand logo's color scheme.
-- **Sections** — hero, feature strip, collections (Bed Sheets, Carpets, Cushions &amp; Throws),
-  dedicated Bed Sheets &amp; Carpets product sections, the shop, brand story/craftsmanship,
-  testimonials slider, newsletter signup, and a contact form.
-- **No build step** — plain HTML/CSS/JS, all visuals (weave/loom patterns) drawn with CSS/SVG so
-  there are no external image dependencies.
+## Three pages, one file
 
-## The shop
+`index.html` holds all three; `js/main.js` swaps between them, so nothing is scrolled past — each
+view comes off the document entirely.
 
-The **Shop Now** button (header, hero, and the Cushions collection card) reveals a store section
-holding 8 products across the three categories, with:
+- **Landing** — the wordmark, one line of copy and **Shop Now**. Nothing else, and no scroll.
+- **Shop** — the ten bed sheet sets, quick view, and add-to-bag with a slide-in cart drawer.
+- **Checkout** — delivery details, order summary, and the UPI payment panel.
 
-- category filter chips (All / Bed Sheets / Carpets / Cushions &amp; Throws)
-- add-to-bag on every card, a live count badge on the header cart icon, and a toast confirmation
-- a slide-in cart drawer with per-item quantity steppers and a running total
+All three push history, so Back and Forward work and `#shop` is a shareable link that opens
+straight into the store.
 
-There is no payment backend. **Request This Order** closes the drawer, writes the bag contents into
-the contact form's message field, and scrolls the visitor there — so enquiries arrive by email.
-To wire up real checkout later, replace that handler in `js/main.js` (search for `cartCheckout`).
+## Products
 
-Products live directly in `index.html` as `.shop-card` articles. Each one carries `data-id`,
-`data-name`, `data-price` (integer rupees) and `data-category`, which is all the cart and filters
-read — so adding a product is just copying a card and editing those attributes.
+Each product is a `.shop-card` article in `index.html`. The cart and filters read only its data
+attributes — `data-id`, `data-name`, `data-price` (integer rupees) and `data-category` — so adding
+a product means copying a card and editing those.
 
-### Product photos
+Photos resolve by convention: a card with `data-id="satin-sky"` shows
+`assets/products/satin-sky.jpg`. Drop the file in and it appears; until then `main.js` removes the
+broken image and the CSS-drawn weave pattern behind it shows instead. See
+`assets/products/README.md` for sizing.
 
-Every card points at `assets/products/<data-id>.jpg`. Drop a file with that name into
-`assets/products/` and the photo appears — no code change needed. Until the file exists, `main.js`
-removes the broken image and the CSS-drawn weave pattern behind it shows instead, so missing
-photos never leave holes in the grid. See `assets/products/README.md` for the filename list and
-sizing guidance (4:3 landscape, ~1200×900, under 300 KB).
+> **Every price is the same placeholder, ₹4,999.** That is the owner's confirmed price for the
+> Onyx set, reused across the range. It is not the real price for the other nine.
 
-## Structure
+## Payment
+
+UPI only. The customer pays from their own UPI app, enters the reference number, and the order
+reaches the owner by email; the owner matches the payment by hand before dispatch.
+
+`ADORN_PAYMENT` at the top of `js/main.js` holds the details. Emptying `upiId` makes the checkout
+say payment is not set up rather than showing a placeholder someone might actually pay — do not
+replace that with a dummy UPI ID.
+
+Bank transfer is deliberately off: publishing an account number is the owner's decision, not a
+default. Filling in the three `bank` fields turns it on.
+
+There is no card option. Charging a card needs a licensed gateway account, which needs the
+owner's KYC. The Razorpay groundwork is parked but unreferenced — `api/razorpay-order.js`,
+`api/razorpay-verify.js` and `docs/razorpay-setup.md`.
+
+## Layout
 
 ```
-index.html        Markup for all sections
-css/style.css     Styling, palette, animations, responsive layout
-js/main.js        Intro animation control, nav toggle, scroll reveal, testimonial slider, forms
+index.html               All markup, single page
+css/style.css            Palette, type, layout, animation
+js/main.js               Intro animation, reveals, shop, cart, checkout
+assets/products/         Product photos
+assets/upi-qr.png        The owner's UPI QR, shown at checkout
+tools/build-preview.py   Bundles the site into one self-contained preview page
+tools/build-release.py   Packages the site as a zip for uploading to a web host
 ```
 
 ## Running locally
-
-Just open `index.html` in a browser, or serve the folder:
 
 ```bash
 python3 -m http.server 8000
 ```
 
-Then visit `http://localhost:8000`.
+Then visit `http://localhost:8000`. Opening `index.html` directly works too.
 
-## Customizing
+## Packaging for a host
 
-- Replace the `A` monogram in `.logo-mark` / the intro SVG with your actual logo file once available.
-- Swap the CSS-drawn weave/carpet patterns in `css/style.css` (search for `pattern-`) with real
-  product photography by replacing those elements with `<img>` tags.
-- Update contact details, social links and copy directly in `index.html`.
+```bash
+python3 tools/build-release.py
+```
+
+Writes `dist/adorn-website.zip` — the four site files plus the photos, and an owner-facing
+`README.txt` explaining how to upload it. The script refuses to build if the markup or script
+references an asset that would not be in the zip, so the download cannot ship half a site.
