@@ -32,11 +32,23 @@ tools/build-preview.py   Bundles the preview
 
 ## Payment
 
-UPI, no gateway and no server. The customer pays from their own UPI app and sends the order
-through with the reference; the owner matches it by hand before dispatch.
+The checkout offers two methods, chosen with the `.pay-method` toggle: **UPI** (live) and
+**Debit / Credit Card** (waiting on a gateway). Either way the customer pays, enters the
+reference, and the order reaches the owner by email; the owner matches the payment by hand
+before dispatch.
+
+**Cards cannot be charged from this page.** There is no server, and a price held in browser
+JavaScript can be edited before it is sent, so no client-only card integration here would be
+safe. The workable route without a server is a hosted payment page — Razorpay, PayU, Cashfree —
+whose URL goes in `ADORN_PAYMENT.cardLink`. Until that is filled in, the Card panel says card
+payment is not switched on and explains why. Do not replace that with a fake card form.
+
+A hosted link means the customer types the amount themselves, so the panel states the exact
+figure. Taking the amount out of their hands needs a small serverless function that creates the
+order and verifies the signature — the honest upgrade path if card volume ever justifies it.
 
 `ADORN_PAYMENT` at the top of `js/main.js` holds the real details: UPI `6239073929-2@axl`,
-orders to `adorn.2026@gmail.com`. The panel is rendered from `window.ADORN_PAYMENT` at render
+orders to `adorn.2026@gmail.com`, and `cardLink` (empty). The panel is rendered from `window.ADORN_PAYMENT` at render
 time, not captured at load.
 
 Checkout hands the order off **by email only**. WhatsApp was removed at the owner's request; the

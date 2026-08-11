@@ -9,6 +9,13 @@ var ADORN_PAYMENT = {
   upiId: "6239073929-2@axl",
   payeeName: "Adorn",
   orderEmail: "adorn.2026@gmail.com",
+
+  // Cards need a payment gateway — they cannot be taken safely from a page with
+  // no server, because a price held in browser JavaScript can be edited before
+  // it is sent. Paste a hosted payment page / payment link URL from Razorpay,
+  // PayU, Cashfree or similar and the Card option switches on. Until then the
+  // checkout says so rather than pretending to accept cards.
+  cardLink: "",
   // Bank transfer is deliberately off. The owner's account details exist but
   // publishing an account number on a public page is their call, not a default.
   bank: {
@@ -733,6 +740,11 @@ var ADORN_PAYMENT = {
   var orderLines = document.getElementById("orderLines");
   var orderTotal = document.getElementById("orderTotal");
   var payPanel = document.getElementById("payPanel");
+  var payMethods = document.getElementById("payMethods");
+  var referenceLabel = document.getElementById("referenceLabel");
+  var referenceInput = document.getElementById("referenceInput");
+  var referenceHint = document.getElementById("referenceHint");
+  var payMethod = "upi";
 
   function payment() { return window.ADORN_PAYMENT || {}; }
 
@@ -764,24 +776,43 @@ var ADORN_PAYMENT = {
   function renderPayPanel() {
     if (!payPanel) return;
     payPanel.textContent = "";
+    var PAY = payment();
     var total = bagTotal();
 
-    var PAY = payment();
+    if (payMethod === "card") {
+      renderCardPanel(PAY, total);
+      return;
+    }
+    renderUpiPanel(PAY, total);
+  }
+
+  function payUnset(message) {
+    var warn = document.createElement("p");
+    warn.className = "pay-unset";
+    warn.textContent = message;
+    payPanel.appendChild(warn);
+  }
+
+  function payAmountLine(total) {
+    var amount = document.createElement("p");
+    amount.className = "pay-amount";
+    amount.appendChild(document.createTextNode("Pay "));
+    var strong = document.createElement("strong");
+    strong.textContent = rupees(total);
+    amount.appendChild(strong);
+    return amount;
+  }
+
+  function renderUpiPanel(PAY, total) {
     if (!PAY.upiId) {
       // Better to say nothing is set up than to show a placeholder someone might pay.
-      var warn = document.createElement("p");
-      warn.className = "pay-unset";
-      warn.textContent =
-        "Online payment is not set up yet. Fill in ADORN_PAYMENT at the top of " +
-        "js/main.js with your UPI ID, and this panel will show " +
-        "your payment details here.";
-      payPanel.appendChild(warn);
+      payUnset("UPI is not set up yet. Fill in ADORN_PAYMENT at the top of js/main.js " +
+               "with your UPI ID, and this panel will show your payment details here.");
       return;
     }
 
-    var amount = document.createElement("p");
-    amount.className = "pay-amount";
-    amount.innerHTML = "Pay <strong>" + rupees(total) + "</strong> to";
+    var amount = payAmountLine(total);
+    amount.appendChild(document.createTextNode(" to"));
     payPanel.appendChild(amount);
 
     var idRow = document.createElement("div");
@@ -812,7 +843,6 @@ var ADORN_PAYMENT = {
     link.textContent = "Open UPI App";
     payPanel.appendChild(link);
 
-    // A QR the owner drops in themselves; removed if the file is not there.
     var qr = document.createElement("img");
     qr.className = "pay-qr";
     qr.src = "assets/upi-qr.png";
@@ -830,6 +860,63 @@ var ADORN_PAYMENT = {
     }
   }
 
+  function renderCardPanel(PAY, total) {
+    if (!PAY.cardLink) {
+      payUnset("Card payment is not switched on yet. Cards need a payment gateway — " +
+               "a card cannot be charged safely straight from this page. Once you have a " +
+               "Razorpay, PayU or Cashfree account, paste its payment page link into " +
+               "cardLink in js/main.js and this becomes a working card option.");
+      return;
+    }
+
+    payPanel.appendChild(payAmountLine(total));
+
+    var link = document.createElement("a");
+    link.className = "btn btn-primary pay-open";
+    link.href = PAY.cardLink;
+    link.target = "_blank";
+    link.rel = "noopener";
+    link.textContent = "Pay by Card";
+    payPanel.appendChild(link);
+
+    var note = document.createElement("p");
+    note.className = "pay-bank";
+    note.textContent = "This opens our secure payment page. Enter " + rupees(total) +
+      " as the amount, then come back and paste the payment ID below.";
+    payPanel.appendChild(note);
+  }
+
+  function setPayMethod(method) {
+    payMethod = method;
+    if (payMethods) {
+      payMethods.querySelectorAll(".pay-method").forEach(function (b) {
+        b.classList.toggle("is-active", b.dataset.method === method);
+      });
+    }
+    if (referenceLabel) {
+      referenceLabel.textContent = method === "card"
+        ? "Payment ID" : "UPI reference number";
+    }
+    if (referenceInput) {
+      referenceInput.placeholder = method === "card"
+        ? "The ID shown after your card payment" : "12-digit number from your UPI app";
+      referenceInput.value = "";
+    }
+    if (referenceHint) {
+      referenceHint.textContent = method === "card"
+        ? "The payment page shows this once the card goes through. It lets us match your payment to this order."
+        : "Your UPI app shows this after paying. It lets us match your payment to this order.";
+    }
+    renderPayPanel();
+  }
+
+  if (payMethods) {
+    payMethods.addEventListener("click", function (e) {
+      var btn = e.target.closest(".pay-method");
+      if (btn) setPayMethod(btn.dataset.method);
+    });
+  }
+
   function orderMessage(f) {
     var lines = ["NEW ORDER — Adorn", ""];
     Object.keys(cart).forEach(function (id) {
@@ -844,8 +931,10 @@ var ADORN_PAYMENT = {
     lines.push(f.city + ", " + f.state + " — " + f.pin, "");
     lines.push("PAYMENT");
     var PAY = payment();
-    lines.push("Paid by UPI" + (PAY.upiId ? " to " + PAY.upiId : ""));
-    lines.push("Reference: " + f.reference);
+    lines.push(payMethod === "card"
+      ? "Paid by card"
+      : "Paid by UPI" + (PAY.upiId ? " to " + PAY.upiId : ""));
+    lines.push((payMethod === "card" ? "Payment ID: " : "Reference: ") + f.reference);
     return lines.join("\n");
   }
 
@@ -867,7 +956,9 @@ var ADORN_PAYMENT = {
     if (!f.address) return "Please add a delivery address.";
     if (!f.city || !f.state) return "Please add your city and state.";
     if (!/^[0-9]{6}$/.test(f.pin)) return "Please enter a 6-digit PIN code.";
-    if (!f.reference) return "Please add the UPI reference from your payment.";
+    if (!f.reference) return payMethod === "card"
+      ? "Please add the payment ID from your card payment."
+      : "Please add the UPI reference from your payment.";
     return "";
   }
 
