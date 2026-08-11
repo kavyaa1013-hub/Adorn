@@ -37,15 +37,30 @@ The checkout offers two methods, chosen with the `.pay-method` toggle: **UPI** (
 reference, and the order reaches the owner by email; the owner matches the payment by hand
 before dispatch.
 
-**Cards cannot be charged from this page.** There is no server, and a price held in browser
-JavaScript can be edited before it is sent, so no client-only card integration here would be
-safe. The workable route without a server is a hosted payment page — Razorpay, PayU, Cashfree —
-whose URL goes in `ADORN_PAYMENT.cardLink`. Until that is filled in, the Card panel says card
-payment is not switched on and explains why. Do not replace that with a fake card form.
+**A card must never be charged on an amount the browser supplied.** The card panel has three
+states, checked in this order:
 
-A hosted link means the customer types the amount themselves, so the panel states the exact
-figure. Taking the amount out of their hands needs a small serverless function that creates the
-order and verifies the signature — the honest upgrade path if card volume ever justifies it.
+1. `razorpay.keyId` + `razorpay.orderApi` set → real Razorpay Checkout. `api/razorpay-order.js`
+   prices the order from **its own copy of the price list** and creates the Razorpay order; the
+   browser only sends ids and quantities. `api/razorpay-verify.js` recomputes the HMAC of
+   `order_id|payment_id` before the payment is accepted. Both need `RAZORPAY_KEY_SECRET` in the
+   deploy's environment — never in this repo, never in the page. `keyId` in `main.js` is the
+   public key and is fine there.
+2. `cardLink` set → a hosted Razorpay Payment Page. No server, but the customer types the amount,
+   so the panel states the exact figure.
+3. Neither → the panel says card payment is not switched on and points at
+   `docs/razorpay-setup.md`. Do not replace that with a fake card form.
+
+`checkout.razorpay.com/v1/checkout.js` is loaded lazily, only when someone picks Card *and*
+Razorpay is configured — so the page never reaches for it otherwise, and the artifact preview
+stays inside its CSP.
+
+**The price list in `api/razorpay-order.js` is authoritative and duplicated on purpose.** Change a
+`data-price` in `index.html` and you must change it there too, or the customer is charged the
+server's figure.
+
+`docs/razorpay-setup.md` is the owner-facing guide: KYC, keys, deploying the two functions, and
+Razorpay's test card.
 
 `ADORN_PAYMENT` at the top of `js/main.js` holds the real details: UPI `6239073929-2@axl`,
 orders to `adorn.2026@gmail.com`, and `cardLink` (empty). The panel is rendered from `window.ADORN_PAYMENT` at render

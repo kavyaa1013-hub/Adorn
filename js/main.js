@@ -10,11 +10,18 @@ var ADORN_PAYMENT = {
   payeeName: "Adorn",
   orderEmail: "adorn.2026@gmail.com",
 
-  // Cards need a payment gateway — they cannot be taken safely from a page with
-  // no server, because a price held in browser JavaScript can be edited before
-  // it is sent. Paste a hosted payment page / payment link URL from Razorpay,
-  // PayU, Cashfree or similar and the Card option switches on. Until then the
-  // checkout says so rather than pretending to accept cards.
+  // --- Cards, the proper way. See docs/razorpay-setup.md ---
+  // keyId is the public key and is safe here. The secret belongs only in the
+  // serverless functions' environment variables — never in this file.
+  razorpay: {
+    keyId: "",      // rzp_live_xxxxxxxx
+    orderApi: "",   // URL of api/razorpay-order.js once deployed
+    verifyApi: ""   // URL of api/razorpay-verify.js once deployed
+  },
+
+  // --- Cards, the no-server fallback ---
+  // A hosted Razorpay Payment Page link. Works without deploying anything, but
+  // the customer types the amount themselves. Used only if razorpay above is blank.
   cardLink: "",
   // Bank transfer is deliberately off. The owner's account details exist but
   // publishing an account number on a public page is their call, not a default.
@@ -860,15 +867,26 @@ var ADORN_PAYMENT = {
     }
   }
 
+  function razorpayReady(PAY) {
+    var rp = PAY.razorpay || {};
+    return Boolean(rp.keyId && rp.orderApi);
+  }
+
   function renderCardPanel(PAY, total) {
-    if (!PAY.cardLink) {
-      payUnset("Card payment is not switched on yet. Cards need a payment gateway — " +
-               "a card cannot be charged safely straight from this page. Once you have a " +
-               "Razorpay, PayU or Cashfree account, paste its payment page link into " +
-               "cardLink in js/main.js and this becomes a working card option.");
+    if (razorpayReady(PAY)) {
+      renderRazorpayPanel(PAY, total);
       return;
     }
+    if (PAY.cardLink) {
+      renderCardLinkPanel(PAY, total);
+      return;
+    }
+    payUnset("Card payment is not switched on yet. Cards need a payment gateway — a card " +
+             "cannot be charged safely straight from this page. See docs/razorpay-setup.md; " +
+             "once Razorpay is connected this becomes a working card option.");
+  }
 
+  function renderCardLinkPanel(PAY, total) {
     payPanel.appendChild(payAmountLine(total));
 
     var link = document.createElement("a");
@@ -884,6 +902,115 @@ var ADORN_PAYMENT = {
     note.textContent = "This opens our secure payment page. Enter " + rupees(total) +
       " as the amount, then come back and paste the payment ID below.";
     payPanel.appendChild(note);
+  }
+
+  /* Razorpay's script is only fetched once someone actually chooses to pay by card
+     and Razorpay is configured, so the page never reaches for it otherwise. */
+  var razorpayScript = null;
+  function loadRazorpay() {
+    if (razorpayScript) return razorpayScript;
+    razorpayScript = new Promise(function (resolve, reject) {
+      if (window.Razorpay) return resolve(window.Razorpay);
+      var s = document.createElement("script");
+      s.src = "https://checkout.razorpay.com/v1/checkout.js";
+      s.onload = function () { resolve(window.Razorpay); };
+      s.onerror = function () {
+        razorpayScript = null;
+        reject(new Error("Could not reach Razorpay."));
+      };
+      document.head.appendChild(s);
+    });
+    return razorpayScript;
+  }
+
+  function renderRazorpayPanel(PAY, total) {
+    payPanel.appendChild(payAmountLine(total));
+
+    var pay = document.createElement("button");
+    pay.type = "button";
+    pay.className = "btn btn-primary pay-open";
+    pay.textContent = "Pay by Card";
+    payPanel.appendChild(pay);
+
+    var status = document.createElement("p");
+    status.className = "pay-bank";
+    status.textContent = "Card, netbanking and wallets, handled by Razorpay. " +
+      "Your card details never touch this site.";
+    payPanel.appendChild(status);
+
+    pay.addEventListener("click", function () {
+      startRazorpay(PAY, pay, status);
+    });
+  }
+
+  function startRazorpay(PAY, button, status) {
+    var rp = PAY.razorpay;
+    button.disabled = true;
+    status.textContent = "Opening the secure payment window…";
+
+    // The server prices the order from its own list; we only send ids and quantities.
+    var items = Object.keys(cart).map(function (id) {
+      return { id: id, qty: cart[id].qty };
+    });
+
+    fetch(rp.orderApi, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items: items })
+    })
+      .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+      .then(function (res) {
+        if (!res.ok) throw new Error(res.d.error || "Could not start the payment.");
+        return loadRazorpay().then(function (Razorpay) {
+          var f = readForm();
+          return new Promise(function (resolve, reject) {
+            var checkout = new Razorpay({
+              key: res.d.keyId || rp.keyId,
+              order_id: res.d.orderId,
+              amount: res.d.amount,
+              currency: res.d.currency || "INR",
+              name: "Adorn",
+              description: "Bed sheet order",
+              prefill: { name: f.name, email: f.email, contact: f.phone },
+              theme: { color: "#cda449" },
+              handler: function (r) { resolve(r); },
+              modal: { ondismiss: function () { reject(new Error("Payment window closed.")); } }
+            });
+            checkout.on("payment.failed", function (e) {
+              reject(new Error((e.error && e.error.description) || "The payment failed."));
+            });
+            checkout.open();
+          });
+        });
+      })
+      .then(function (result) {
+        // A browser saying "it worked" proves nothing; the server checks the signature.
+        if (!rp.verifyApi) return result;
+        return fetch(rp.verifyApi, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderId: result.razorpay_order_id,
+            paymentId: result.razorpay_payment_id,
+            signature: result.razorpay_signature
+          })
+        })
+          .then(function (r) { return r.json(); })
+          .then(function (v) {
+            if (!v.verified) throw new Error("We could not verify that payment.");
+            return result;
+          });
+      })
+      .then(function (result) {
+        if (referenceInput) referenceInput.value = result.razorpay_payment_id;
+        status.textContent = "Payment received. Send the order below to finish.";
+        button.textContent = "Paid ✓";
+        button.disabled = true;
+      })
+      .catch(function (err) {
+        status.textContent = err.message + " Nothing has been charged — you can try again.";
+        button.disabled = false;
+      });
   }
 
   function setPayMethod(method) {

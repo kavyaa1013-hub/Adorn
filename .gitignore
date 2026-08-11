@@ -4,3 +4,9 @@ node_modules/
 
 # Generated preview bundle
 preview/
+
+# Never commit gateway secrets — RAZORPAY_KEY_SECRET belongs in the deploy's
+# environment variables, not in this repository.
+.env
+.env.*
+!.env.example
