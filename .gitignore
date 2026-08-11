@@ -13,3 +13,5 @@ preview/
 
 # Release zips are built on demand, not committed.
 dist/
+__pycache__/
+*.pyc
