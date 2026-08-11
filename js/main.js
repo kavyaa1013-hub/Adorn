@@ -8,7 +8,6 @@
 var ADORN_PAYMENT = {
   upiId: "6239073929-2@axl",
   payeeName: "Adorn",
-  whatsapp: "917082524499",
   orderEmail: "adorn.2026@gmail.com",
   // Bank transfer is deliberately off. The owner's account details exist but
   // publishing an account number on a public page is their call, not a default.
@@ -148,7 +147,7 @@ var ADORN_PAYMENT = {
         : 0;
       showToast(
         "Welcome to the Adorn store — " + ready + " piece" +
-        (ready === 1 ? "" : "s") + " ready to ship, more on the loom."
+        (ready === 1 ? "" : "s") + " ready to ship."
       );
     }
   }
@@ -237,8 +236,7 @@ var ADORN_PAYMENT = {
   var backToCategories = document.getElementById("backToCategories");
 
   var CATEGORY_NAMES = {
-    bedsheets: "Bed Sheets",
-    carpets: "Carpets"
+    bedsheets: "Bed Sheets"
   };
   var HEADING_DEFAULT = shopHeading ? shopHeading.textContent : "";
   var SUB_DEFAULT = shopSub ? shopSub.textContent : "";
@@ -305,6 +303,16 @@ var ADORN_PAYMENT = {
   }
 
   function showRanges() {
+    // With one range there is nothing to choose between, so skip the chooser.
+    var present = Object.keys(CATEGORY_NAMES).filter(function (key) {
+      return countIn(key) > 0;
+    });
+    if (present.length < 2) {
+      showRange(present[0] || Object.keys(CATEGORY_NAMES)[0]);
+      if (backToCategories) backToCategories.hidden = true;
+      return;
+    }
+    if (backToCategories) backToCategories.hidden = false;
     if (categoryGrid) categoryGrid.hidden = false;
     if (shopProducts) shopProducts.hidden = true;
     if (shopHeading) shopHeading.textContent = HEADING_DEFAULT;
@@ -448,7 +456,7 @@ var ADORN_PAYMENT = {
         "\n\nCould you send sizes, colours and pricing?";
     }
     if (subjectField) {
-      var subjects = { bedsheets: "Bed Sheets Order", carpets: "Carpet Order" };
+      var subjects = { bedsheets: "Bed Sheets Order" };
       subjectField.value = subjects[card.dataset.category] || "General Enquiry";
     }
 
@@ -721,7 +729,6 @@ var ADORN_PAYMENT = {
   var checkoutSection = document.getElementById("checkout");
   var checkoutForm = document.getElementById("checkoutForm");
   var checkoutNote = document.getElementById("checkoutNote");
-  var checkoutEmail = document.getElementById("checkoutEmail");
   var backToShop = document.getElementById("backToShop");
   var orderLines = document.getElementById("orderLines");
   var orderTotal = document.getElementById("orderTotal");
@@ -766,7 +773,7 @@ var ADORN_PAYMENT = {
       warn.className = "pay-unset";
       warn.textContent =
         "Online payment is not set up yet. Fill in ADORN_PAYMENT at the top of " +
-        "js/main.js with your UPI ID and WhatsApp number, and this panel will show " +
+        "js/main.js with your UPI ID, and this panel will show " +
         "your payment details here.";
       payPanel.appendChild(warn);
       return;
@@ -892,46 +899,35 @@ var ADORN_PAYMENT = {
     });
   }
 
-  function submitOrder(via) {
+  function submitOrder() {
     var f = readForm();
     var problem = validate(f);
     if (problem) {
       if (checkoutNote) checkoutNote.textContent = problem;
       return;
     }
-    var body = orderMessage(f);
     var PAY = payment();
-    if (via === "email") {
-      var to = PAY.orderEmail || "";
-      window.location.href = "mailto:" + to +
-        "?subject=" + encodeURIComponent("New Adorn order — " + f.name) +
-        "&body=" + encodeURIComponent(body);
-    } else {
-      if (!PAY.whatsapp) {
-        if (checkoutNote) {
-          checkoutNote.textContent =
-            "WhatsApp is not set up yet — add your number to ADORN_PAYMENT in js/main.js.";
-        }
-        return;
+    var to = PAY.orderEmail || "";
+    if (!to) {
+      if (checkoutNote) {
+        checkoutNote.textContent =
+          "Order email is not set up yet — add orderEmail to ADORN_PAYMENT in js/main.js.";
       }
-      window.open("https://wa.me/" + PAY.whatsapp + "?text=" + encodeURIComponent(body), "_blank");
+      return;
     }
+    window.location.href = "mailto:" + to +
+      "?subject=" + encodeURIComponent("New Adorn order — " + f.name) +
+      "&body=" + encodeURIComponent(orderMessage(f));
     if (checkoutNote) {
       checkoutNote.textContent =
-        "Thank you. Send the message that just opened and we will confirm your order.";
+        "Thank you. Send the email that just opened and we will confirm your order.";
     }
   }
 
   if (checkoutForm) {
     checkoutForm.addEventListener("submit", function (e) {
       e.preventDefault();
-      submitOrder("whatsapp");
-    });
-  }
-  if (checkoutEmail) {
-    checkoutEmail.addEventListener("click", function (e) {
-      e.preventDefault();
-      submitOrder("email");
+      submitOrder();
     });
   }
 

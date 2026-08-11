@@ -36,8 +36,12 @@ UPI, no gateway and no server. The customer pays from their own UPI app and send
 through with the reference; the owner matches it by hand before dispatch.
 
 `ADORN_PAYMENT` at the top of `js/main.js` holds the real details: UPI `6239073929-2@axl`,
-WhatsApp `917082524499`, orders to `adorn.2026@gmail.com`. The panel is rendered from
-`window.ADORN_PAYMENT` at render time, not captured at load.
+orders to `adorn.2026@gmail.com`. The panel is rendered from `window.ADORN_PAYMENT` at render
+time, not captured at load.
+
+Checkout hands the order off **by email only**. WhatsApp was removed at the owner's request; the
+number still appears in the contact section as a way to reach them, but nothing routes an order
+through it.
 
 The guard around it stays: if `upiId` is ever emptied, the checkout says payment is not set up
 rather than showing a placeholder someone might actually pay. Do not swap that for a dummy UPI ID.
@@ -64,7 +68,7 @@ view comes off the document:
   and scrolls to the top. `showLanding()` reverses it, and the logo (`#homeLink`) calls it.
 - **Checkout** (`#checkout`) — `showCheckout()`, reached from the bag. Delivery details, the order
   summary and the UPI panel. Validates name, 10-digit phone, email, address, 6-digit PIN and the
-  UPI reference, then hands the whole order to WhatsApp (or email) prefilled.
+  UPI reference, then opens a prefilled email to the owner.
 
 All three push history, so Back and Forward move between them and `#shop` is a shareable link that
 opens straight into the store. A fresh load on `#checkout` goes to the shop instead — the bag does
@@ -122,16 +126,15 @@ reason. Adorn sells handloom cotton *and* satin; copy must not claim otherwise.
 The `data-placeholder` machinery (no price, "Coming soon" pill, Enquire routing to the contact
 form) still works and is documented here, but nothing currently uses it.
 
-The shop opens on a chooser of two ranges — Bed Sheets and Carpets — and picking
-one swaps in just that range's cards. `main.js` derives everything from the cards themselves: each
-tile's count line, an empty state for a range with nothing in it, and a narrower centred grid when
-a range holds one or two pieces. So adding a product is a matter of editing `index.html` alone.
+Bed Sheets is the only range. The chooser machinery is still there but `showRanges()` skips it
+whenever fewer than two ranges hold products, going straight to the one range and hiding the
+"All ranges" link — a chooser of one is not a choice. Add a second entry to `CATEGORY_NAMES`, a
+matching `.category-tile`, and cards with that `data-category`, and the chooser returns on its own.
 
-A `data-shop-open` trigger may name a range (`data-shop-open="carpets"`) to jump straight into it;
-without a value it opens the chooser.
-
-Carpets has no products, so the range shows its "Coming soon" state; adding a `.shop-card` with
-`data-category="carpets"` is all it takes to bring the grid back.
+Carpets were removed at the owner's request, along with the tile, the copy and the contact form's
+"Carpet Order" subject. `main.js` still derives each tile's count line, an empty state for a range
+with nothing in it, and a narrower centred grid for one or two pieces, so adding a product remains
+a matter of editing `index.html` alone.
 
 Contact details are the owner's real ones: Barsat Road, Noorwala, Panipat, Haryana 132103,
 `adorn.2026@gmail.com`, +91 70825 24499. No invented contact information remains, and the social
